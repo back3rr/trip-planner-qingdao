@@ -328,7 +328,7 @@ function renderStop(stop, trow) {
   <div class="snum">${stop.stop_number}</div>
   <div class="sbody">
     ${stop.time_label ? `<div class="stime">${stop.time_label.slice(-5)}${stop.duration ? ` · ${esc(stop.duration)}` : ''}</div>` : ''}
-    <div class="sname">${esc(stop.name)}${icons ? `<span class="sico">${icons}</span>` : ''}</div>
+    <div class="sname">${icons ? `<span class="sico">${icons}</span>` : ''}${esc(stop.name)}</div>
     ${stop.chinese_name ? `<div class="scn">${stop.chinese_name}${stop.address ? ` · ${esc(stop.address)}` : ''}</div>` : stop.address ? `<div class="scn">${esc(stop.address)}</div>` : ''}
     ${stop.note ? `<div class="snote">${stop.note}</div>` : ''}
     ${allBadges ? `<div class="smeta">${allBadges}</div>` : ''}
