@@ -69,8 +69,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ══ MAP — exactly 50vh below header ══ */
 .map-wrap {
   position: fixed;
-  top: var(--hdr-h); left: 0; right: 0;
-  height: calc(50vh);   /* half screen */
+  top: 0; left: 0; right: 0;
+  height: calc(50vh + var(--hdr-h));
   z-index: 1;
 }
 #mainMap {
