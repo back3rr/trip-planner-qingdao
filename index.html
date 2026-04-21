@@ -200,14 +200,15 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 <!-- ══ HEADER ══ -->
 <div class="hdr">
-  <div class="hdr-top">
+  <canvas id="wxCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s"></canvas>
+  <div class="hdr-top" style="position:relative;z-index:1">
     <div>
       <div class="ttl">Thanh Đảo 青島</div>
       <div class="sub">23–27 tháng 4, 2026 · Gia đình</div>
     </div>
     <div class="wbadge" id="wbadge" style="min-width:72px;color:var(--border);background:linear-gradient(90deg,var(--card) 25%,var(--border) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.2s infinite">···</div>
   </div>
-  <div class="tabs">
+  <div class="tabs" style="position:relative;z-index:1">
     <div class="tab active" data-d="23" onclick="sw('23')">N1<br><small>23/4</small></div>
     <div class="tab"        data-d="24" onclick="sw('24')">N2<br><small>24/4</small></div>
     <div class="tab"        data-d="25" onclick="sw('25')">N3<br><small>25/4</small></div>
@@ -629,7 +630,155 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (code <= 82) return '🌦';
     return '⛈';
   }
-  const badge = document.getElementById('wbadge');
+
+  const badge  = document.getElementById('wbadge');
+  const canvas = document.getElementById('wxCanvas');
+  const ctx    = canvas.getContext('2d');
+  let raf;
+
+  function initCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = canvas.offsetWidth  * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  function startWeatherCanvas(code) {
+    initCanvas();
+    if (raf) cancelAnimationFrame(raf);
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    canvas.style.opacity = '1';
+
+    if (code === 0) {
+      // Sunny — soft pulsing glow top-right
+      let t = 0;
+      const cx = W - 24, cy = 16;
+      (function draw() {
+        ctx.clearRect(0, 0, W, H);
+        const pulse = 0.12 + Math.sin(t) * 0.04;
+        const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 60);
+        g.addColorStop(0, `rgba(255,210,60,${pulse + 0.1})`);
+        g.addColorStop(1, 'rgba(255,180,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        for (let i = 0; i < 8; i++) {
+          const a = t * 0.3 + i * Math.PI / 4;
+          const r1 = 12, r2 = 28 + Math.sin(t + i) * 4;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
+          ctx.strokeStyle = `rgba(255,210,60,${0.25 + Math.sin(t + i) * 0.05})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+        t += 0.04;
+        raf = requestAnimationFrame(draw);
+      })();
+
+    } else if (code <= 3) {
+      // Partly cloudy — drifting soft blobs
+      const blobs = Array.from({length: 4}, (_, i) => ({
+        x: (i / 4) * W + Math.random() * 40,
+        y: 10 + Math.random() * 30,
+        r: 30 + Math.random() * 20,
+        speed: 0.15 + Math.random() * 0.15,
+        opacity: 0.04 + Math.random() * 0.04
+      }));
+      (function draw() {
+        ctx.clearRect(0, 0, W, H);
+        blobs.forEach(b => {
+          const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+          g.addColorStop(0, `rgba(200,220,255,${b.opacity})`);
+          g.addColorStop(1, 'rgba(200,220,255,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fill();
+          b.x += b.speed;
+          if (b.x - b.r > W) b.x = -b.r;
+        });
+        raf = requestAnimationFrame(draw);
+      })();
+
+    } else if (code <= 67) {
+      // Rain
+      const count = code <= 48 ? 15 : 45;
+      const drops = Array.from({length: count}, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        speed: 3 + Math.random() * 4,
+        len: 8 + Math.random() * 10,
+        opacity: 0.08 + Math.random() * 0.12
+      }));
+      (function draw() {
+        ctx.clearRect(0, 0, W, H);
+        drops.forEach(d => {
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - d.len * 0.15, d.y + d.len);
+          ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          d.y += d.speed; d.x -= d.speed * 0.15;
+          if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
+        });
+        raf = requestAnimationFrame(draw);
+      })();
+
+    } else if (code <= 77) {
+      // Snow
+      const flakes = Array.from({length: 30}, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 1 + Math.random() * 2,
+        speed: 0.4 + Math.random() * 0.8,
+        drift: (Math.random() - 0.5) * 0.3,
+        opacity: 0.15 + Math.random() * 0.2
+      }));
+      (function draw() {
+        ctx.clearRect(0, 0, W, H);
+        flakes.forEach(f => {
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+          ctx.fill();
+          f.y += f.speed; f.x += f.drift;
+          if (f.y > H) { f.y = -4; f.x = Math.random() * W; }
+        });
+        raf = requestAnimationFrame(draw);
+      })();
+
+    } else {
+      // Storm — rain + occasional flash
+      const drops = Array.from({length: 60}, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        speed: 6 + Math.random() * 5,
+        len: 12 + Math.random() * 10,
+        opacity: 0.1 + Math.random() * 0.15
+      }));
+      let flashTimer = 0;
+      (function draw() {
+        ctx.clearRect(0, 0, W, H);
+        flashTimer--;
+        if (flashTimer > 0) {
+          ctx.fillStyle = `rgba(180,200,255,${Math.min(flashTimer / 8, 0.08)})`;
+          ctx.fillRect(0, 0, W, H);
+        } else if (Math.random() < 0.003) {
+          flashTimer = 8;
+        }
+        drops.forEach(d => {
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - d.len * 0.2, d.y + d.len);
+          ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          d.y += d.speed; d.x -= d.speed * 0.2;
+          if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
+        });
+        raf = requestAnimationFrame(draw);
+      })();
+    }
+  }
+
   function clearSkeleton() {
     badge.style.animation = 'none';
     badge.style.background = '';
@@ -639,9 +788,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     .then(r => r.json())
     .then(d => {
       clearSkeleton();
+      const code = d.daily.weathercode[0];
       const min = Math.round(d.daily.temperature_2m_min[0]);
       const max = Math.round(d.daily.temperature_2m_max[0]);
-      badge.textContent = `${weatherEmoji(d.daily.weathercode[0])} ${min}–${max}°C`;
+      badge.textContent = `${weatherEmoji(code)} ${min}–${max}°C`;
+      startWeatherCanvas(code);
     })
     .catch(() => { clearSkeleton(); badge.textContent = '— °C'; });
 })();
