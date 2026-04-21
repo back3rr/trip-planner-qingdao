@@ -25,8 +25,10 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ══ HEADER ══ */
 .hdr {
   position: fixed; top: 0; left: 0; right: 0; z-index: 400;
-  background: linear-gradient(135deg,#0e1117,#141c2e);
-  padding: 16px 16px 0; border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(14,17,23,0.85), rgba(20,28,46,0.85));
+  backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 16px 16px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.06);
 }
 .hdr-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -111,11 +113,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   will-change: transform;
   z-index: 200;
   border-radius: 20px 20px 0 0;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
+  background: rgba(14,17,23,0.82);
+  backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-top: 1px solid rgba(255,255,255,0.1);
   display: none;
   flex-direction: column;
-  box-shadow: 0 -4px 30px rgba(0,0,0,.5);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
 }
 .sheet.visible { display: flex; }
 .sheet.expanded { transform: translateY(0); }
