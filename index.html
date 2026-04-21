@@ -259,10 +259,15 @@ body.light #mainMap { filter: brightness(1) saturate(1); }
 // Use OpenStreetMap tiles (reliable fallback) + CartoDB dark
 const map = L.map('mainMap', { zoomControl: false, attributionControl: false });
 
-// Use CartoDB dark tiles (WGS-84 tile index)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  subdomains: 'abcd', maxZoom: 19
-}).addTo(map);
+const TILES = {
+  dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+};
+let tileLayer = L.tileLayer(TILES.dark, { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+
+function switchMapTiles(theme) {
+  tileLayer.setUrl(TILES[theme]);
+}
 
 // ── GCJ-02 → WGS-84 conversion ──
 // Google Maps URLs in China encode coords as GCJ-02 (Mars Coords).
@@ -678,13 +683,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ── THEME TOGGLE ──
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
+  const theme = isLight ? 'light' : 'dark';
   document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  localStorage.setItem('theme', theme);
+  switchMapTiles(theme);
 }
 (function() {
   if (localStorage.getItem('theme') === 'light') {
     document.body.classList.add('light');
     document.getElementById('themeBtn').textContent = '☀️';
+    switchMapTiles('light');
   }
 })();
 
