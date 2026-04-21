@@ -650,25 +650,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     canvas.style.opacity = '1';
 
     if (code === 0) {
-      // Sunny — soft pulsing glow top-right
+      // Sunny — pulsing glow + rotating rays
       let t = 0;
-      const cx = W - 24, cy = 16;
+      const cx = W - 30, cy = 20;
       (function draw() {
         ctx.clearRect(0, 0, W, H);
-        const pulse = 0.12 + Math.sin(t) * 0.04;
-        const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 60);
-        g.addColorStop(0, `rgba(255,210,60,${pulse + 0.1})`);
-        g.addColorStop(1, 'rgba(255,180,0,0)');
+        const pulse = 0.35 + Math.sin(t) * 0.1;
+        const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 90);
+        g.addColorStop(0, `rgba(255,210,60,${pulse})`);
+        g.addColorStop(0.5, `rgba(255,170,0,${pulse * 0.4})`);
+        g.addColorStop(1, 'rgba(255,140,0,0)');
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
-        for (let i = 0; i < 8; i++) {
-          const a = t * 0.3 + i * Math.PI / 4;
-          const r1 = 12, r2 = 28 + Math.sin(t + i) * 4;
+        for (let i = 0; i < 10; i++) {
+          const a = t * 0.4 + i * Math.PI / 5;
+          const r1 = 16, r2 = 38 + Math.sin(t * 1.5 + i) * 6;
           ctx.beginPath();
           ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
           ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
-          ctx.strokeStyle = `rgba(255,210,60,${0.25 + Math.sin(t + i) * 0.05})`;
-          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = `rgba(255,220,80,${0.55 + Math.sin(t + i) * 0.1})`;
+          ctx.lineWidth = 2;
           ctx.stroke();
         }
         t += 0.04;
@@ -676,13 +677,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       })();
 
     } else if (code <= 3) {
-      // Partly cloudy — drifting soft blobs
-      const blobs = Array.from({length: 4}, (_, i) => ({
-        x: (i / 4) * W + Math.random() * 40,
-        y: 10 + Math.random() * 30,
-        r: 30 + Math.random() * 20,
-        speed: 0.15 + Math.random() * 0.15,
-        opacity: 0.04 + Math.random() * 0.04
+      // Partly cloudy — drifting blobs
+      const blobs = Array.from({length: 5}, (_, i) => ({
+        x: (i / 5) * W + Math.random() * 30,
+        y: 8 + Math.random() * 25,
+        r: 35 + Math.random() * 25,
+        speed: 0.2 + Math.random() * 0.2,
+        opacity: 0.18 + Math.random() * 0.12
       }));
       (function draw() {
         ctx.clearRect(0, 0, W, H);
@@ -702,12 +703,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     } else if (code <= 67) {
       // Rain
-      const count = code <= 48 ? 15 : 45;
+      const count = code <= 48 ? 30 : 70;
       const drops = Array.from({length: count}, () => ({
         x: Math.random() * W, y: Math.random() * H,
-        speed: 3 + Math.random() * 4,
-        len: 8 + Math.random() * 10,
-        opacity: 0.08 + Math.random() * 0.12
+        speed: 4 + Math.random() * 5,
+        len: 10 + Math.random() * 14,
+        opacity: 0.3 + Math.random() * 0.35
       }));
       (function draw() {
         ctx.clearRect(0, 0, W, H);
@@ -716,7 +717,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           ctx.moveTo(d.x, d.y);
           ctx.lineTo(d.x - d.len * 0.15, d.y + d.len);
           ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
-          ctx.lineWidth = 0.8;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
           d.y += d.speed; d.x -= d.speed * 0.15;
           if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
@@ -726,12 +727,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     } else if (code <= 77) {
       // Snow
-      const flakes = Array.from({length: 30}, () => ({
+      const flakes = Array.from({length: 45}, () => ({
         x: Math.random() * W, y: Math.random() * H,
-        r: 1 + Math.random() * 2,
-        speed: 0.4 + Math.random() * 0.8,
-        drift: (Math.random() - 0.5) * 0.3,
-        opacity: 0.15 + Math.random() * 0.2
+        r: 1.5 + Math.random() * 2.5,
+        speed: 0.5 + Math.random() * 1,
+        drift: (Math.random() - 0.5) * 0.4,
+        opacity: 0.4 + Math.random() * 0.4
       }));
       (function draw() {
         ctx.clearRect(0, 0, W, H);
@@ -747,29 +748,29 @@ window.addEventListener('DOMContentLoaded', async () => {
       })();
 
     } else {
-      // Storm — rain + occasional flash
-      const drops = Array.from({length: 60}, () => ({
+      // Storm — heavy rain + flash
+      const drops = Array.from({length: 80}, () => ({
         x: Math.random() * W, y: Math.random() * H,
-        speed: 6 + Math.random() * 5,
-        len: 12 + Math.random() * 10,
-        opacity: 0.1 + Math.random() * 0.15
+        speed: 7 + Math.random() * 6,
+        len: 14 + Math.random() * 12,
+        opacity: 0.3 + Math.random() * 0.3
       }));
       let flashTimer = 0;
       (function draw() {
         ctx.clearRect(0, 0, W, H);
         flashTimer--;
         if (flashTimer > 0) {
-          ctx.fillStyle = `rgba(180,200,255,${Math.min(flashTimer / 8, 0.08)})`;
+          ctx.fillStyle = `rgba(180,210,255,${Math.min(flashTimer / 6, 0.2)})`;
           ctx.fillRect(0, 0, W, H);
-        } else if (Math.random() < 0.003) {
-          flashTimer = 8;
+        } else if (Math.random() < 0.004) {
+          flashTimer = 10;
         }
         drops.forEach(d => {
           ctx.beginPath();
           ctx.moveTo(d.x, d.y);
           ctx.lineTo(d.x - d.len * 0.2, d.y + d.len);
           ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
-          ctx.lineWidth = 0.8;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
           d.y += d.speed; d.x -= d.speed * 0.2;
           if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
