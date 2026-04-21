@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Thanh Đảo 青島 · 23–27/4/2026</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Syne:wght@700;800&display=swap');
 
@@ -156,6 +157,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .sname { font-size: 13px; font-weight: 700; line-height: 1.3; }
 .scn { font-size: 11px; color: var(--muted); margin-top: 1px; }
 .snote { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.sico { font-size: 12px; margin-left: 4px; opacity: .8; }
 .smeta { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
 .b { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
 .bs { background: rgba(245,200,66,.15); color: #f5c842; border: 1px solid rgba(245,200,66,.3); }
@@ -217,149 +219,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 </div>
 
 <!-- ══ SHEETS ══ -->
-
-<!-- N1 · 23/4 -->
-<div class="sheet d23 visible" id="s23">
-  <div class="handle-zone" id="hz23">
-    <div class="handle-bar"></div>
-    <div class="day-info">
-      <div class="day-info-text">
-        <div class="dlbl">Ngày 1 · Thứ 5</div>
-        <div class="dtitle">Dạo quanh KS</div>
-        <div class="ddesc">Nghỉ ngơi rồi đi bộ các điểm gần Manxin. Hoàng hôn đầu tiên ở Trạm Kiều.</div>
-      </div>
-      <a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.072938,120.324322/36.0673,120.320634/36.058454,120.320491" target="_blank" onclick="event.stopPropagation()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route
-      </a>
-    </div>
-  </div>
-  <div class="sheet-body">
-    <div class="slbl">Chiều</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.07202,120.32094,'KS Manxin','14:00')"><div class="snum">1</div><div class="sbody"><div class="stime">14:00 · Check-in</div><div class="sname">KS Manxin Zhanqiao</div><div class="scn">曼信酒店栈桥 · 158 Jiaozhou Rd</div><div class="snote">Metro Line 3 ngay cạnh. Rooftop nổi tiếng.</div><div class="smeta"><span class="b bx">🚕 Từ sân bay ~1h</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/曼信酒店栈桥/@36.07202,120.32094,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 250m hướng Đông</div>
-      <div class="stop" onclick="pin(36.072938,120.324322,'Đảo Đại Bảo','15:00')"><div class="snum">2</div><div class="sbody"><div class="stime">15:00 · 60 phút</div><div class="sname">Đảo Đại Bảo</div><div class="scn">大鲍岛即墨路小商品市场</div><div class="snote">Khu phố cổ: graffiti wall + cafe + chợ Jimo.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/大鲍岛即墨路小商品市场/@36.072938,120.324322,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 500m hướng Nam</div>
-      <div class="stop" onclick="pin(36.0673,120.320634,'Nhà thờ St. Michael','16:00')"><div class="snum">3</div><div class="sbody"><div class="stime">16:00 · 60 phút</div><div class="sname">Nhà thờ St. Michael</div><div class="scn">圣弥厄尔教堂 · 15 Zhejiang Road</div><div class="snote">Gothic 2 tháp chuông 56m. <b>Đóng thứ Hai</b> nhưng chụp ngoài được.</div><div class="smeta"><span class="b bt">🎫 10 NDT vào trong</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/圣弥厄尔教堂/@36.0673,120.320634,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 1.2km xuống biển</div>
-      <div class="stop" onclick="pin(36.058454,120.320491,'Trạm Kiều ★','17:30')"><div class="snum">4</div><div class="sbody"><div class="stime">17:30 · ★ HOÀNG HÔN</div><div class="sname">Trạm Kiều</div><div class="scn">栈桥 · 14 Taiping Road</div><div class="snote">Cầu tàu 440m + Huilan Pavilion. Mặt trời lặn ~18:40.</div><div class="smeta"><span class="b bs">🌅 Hoàng hôn 18:40</span><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/栈桥/@36.058454,120.320491,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-    </div>
-  </div>
-</div>
-
-<!-- N2 · 24/4 -->
-<div class="sheet d24" id="s24">
-  <div class="handle-zone" id="hz24"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 2 · Thứ 6</div><div class="dtitle">Trục Đông</div><div class="ddesc">Sa Tử Khẩu sớm → về dần trung tâm. Hoàng hôn Olympic.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.11347,120.54345/36.054446,120.431213/36.060096,120.390406" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
-  <div class="sheet-body">
-    <div class="slbl">Sáng</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.11347,120.54345,'Sa Tử Khẩu ★ MANDATORY','09:00 · 3 tiếng')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · 3 tiếng · ★ MANDATORY</div><div class="sname">Sa Tử Khẩu</div><div class="scn">沙子口广场 · Laoshan</div><div class="snote">"Amalfi của Trung Quốc". Đứng phía Nam chụp về Bắc.</div><div class="smeta"><span class="b bm">⭐ Không thể bỏ</span><span class="b bx">🚗 ~600 NDT cả ngày</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/沙子口广场/@36.11347,120.54345,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 ~20 phút về trung tâm</div>
-    </div>
-    <div class="slbl">Chiều</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.054446,120.431213,'Tiểu Mạch Đảo','14:30 · 2 tiếng')"><div class="snum">2</div><div class="sbody"><div class="stime">14:30 · 2 tiếng</div><div class="sname">Tiểu Mạch Đảo</div><div class="scn">小麦岛公园</div><div class="snote">Đảo Ghibli — lawn xanh, cây trái tim.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小麦岛公园/@36.054446,120.431213,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 15 phút</div>
-      <div class="stop" onclick="pin(36.060096,120.390406,'Olympic Center ★','16:45')"><div class="snum">3</div><div class="sbody"><div class="stime">16:45 · ★ HOÀNG HÔN</div><div class="sname">Trung tâm Olympic</div><div class="scn">奥帆中心</div><div class="snote">Light show ~18:30. Mặt trời lặn ~18:40.</div><div class="smeta"><span class="b bs">🌅 Hoàng hôn + Light show</span><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/奥帆中心/@36.060096,120.390406,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-    </div>
-  </div>
-</div>
-
-<!-- N3 · 25/4 -->
-<div class="sheet d25" id="s25">
-  <div class="handle-zone" id="hz25"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 3 · Thứ 7</div><div class="dtitle">Old Town Deep Dive</div><div class="ddesc">Tây → Đông: Tây Lăng sáng sớm, xuyên Old Town, Bát Đại Quan chiều. Hoàng hôn #1 tại Cầm Dữ.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.05716,120.31044/36.0598699,120.31254/36.06065,120.31324/36.0637221,120.3229157/36.06216,120.32904/36.0625,120.33051/36.062511,120.331795/36.05982,120.3371/36.05885,120.33654/36.052201,120.352919/36.05395,120.3304/36.052805,120.324005" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
-  <div class="sheet-body">
-    <div class="slbl">Sáng · Tây Lăng</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.05716,120.31044,'Tây Lăng Hiệp 3 ★ Little Kamakura','09:00')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · ★ Little Kamakura</div><div class="sname">Tây Lăng Hiệp 3 西陵峡三路</div><div class="scn">Blue railings + biển. Red No Entry sign viral.</div><div class="smeta"><span class="b bm">📸 Spot viral · ánh sáng sáng đẹp</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/西陵峡三路/@36.05716,120.31044,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 350m dọc bờ biển</div>
-      <div class="stop" onclick="pin(36.0598699,120.31254,'Tây Lăng Hiệp 1','09:35')"><div class="snum">2</div><div class="sbody"><div class="stime">09:35 · 20p</div><div class="sname">Tây Lăng Hiệp 1 西陵峡一路</div><div class="scn">Miyazaki + mái nhà đỏ + biển.</div></div><a class="sgmap" href="https://www.google.com/maps/search/西陵峡一路/@36.0598699,120.31254,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 100m hướng Bắc</div>
-      <div class="stop" onclick="pin(36.06065,120.31324,'Lý Úy Nông','10:00')"><div class="snum">3</div><div class="sbody"><div class="stime">10:00 · 20p</div><div class="sname">Công viên Lý Úy Nông 李慰农公园</div><div class="scn">2 cây thông foreground chụp Trạm Kiều.</div></div><a class="sgmap" href="https://www.google.com/maps/search/李慰农公园/@36.06065,120.31324,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 950m hướng Đông Bắc</div>
-    </div>
-    <div class="slbl">Trưa · Old Town</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.0637221,120.3229157,'Juxian','10:25')"><div class="snum">4</div><div class="sbody"><div class="stime">10:25 · 10p</div><div class="sname">Đường Juxian 莒县路</div><div class="scn">Châu Âu cổ điển ít người.</div></div><a class="sgmap" href="https://www.google.com/maps/search/莒县路/@36.0637221,120.3229157,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 600m hướng Đông Nam</div>
-      <div class="stop" onclick="pin(36.06216,120.32904,'Đường Changzhou','10:40')"><div class="snum">5</div><div class="sbody"><div class="stime">10:40 · café + ăn sáng muộn</div><div class="sname">Đường Changzhou 常州路</div><div class="scn">Kiến trúc Đông-Tây. Nghỉ café tại đây.</div></div><a class="sgmap" href="https://www.google.com/maps/search/常州路/@36.06216,120.32904,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 150m hướng Đông</div>
-      <div class="stop" onclick="pin(36.0625,120.33051,'Long Giang Graffiti','11:30')"><div class="snum">6</div><div class="sbody"><div class="stime">11:30 · 25p</div><div class="sname">Đường Long Giang 龙江路</div><div class="scn">Graffiti wall Ghibli. Trẻ con rất thích.</div></div><a class="sgmap" href="https://www.google.com/maps/search/龙江路/@36.0625,120.33051,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 100m hướng Đông</div>
-      <div class="stop" onclick="pin(36.062511,120.331795,'Nhà cũ Lão Xá','12:00')"><div class="snum">7</div><div class="sbody"><div class="stime">12:00 · 20p</div><div class="sname">Nhà cũ Lão Xá 老舍故居</div><div class="scn">Nhà văn Lão Xá. <b>Đóng thứ Hai.</b></div></div><a class="sgmap" href="https://www.google.com/maps/search/老舍故居/@36.062511,120.331795,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 550m hướng Đông Nam</div>
-      <div class="stop" onclick="pin(36.05982,120.3371,'Phúc Sơn','12:25')"><div class="snum">8</div><div class="sbody"><div class="stime">12:25 · 20p</div><div class="sname">Đường nhánh Phúc Sơn 福山支路</div><div class="scn">Kiến trúc Đức retro.</div></div><a class="sgmap" href="https://www.google.com/maps/search/福山支路/@36.05982,120.3371,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 120m hướng Nam</div>
-      <div class="stop" onclick="pin(36.05885,120.33654,'Núi Tiểu Ngư ★ Panorama','12:50')"><div class="snum">9</div><div class="sbody"><div class="stime">12:50 · ★ PANORAMA + ăn trưa</div><div class="sname">Núi Tiểu Ngư</div><div class="scn">小鱼山公园</div><div class="snote">Panorama #1 Qingdao. Lanchao Pavilion tầng 3.</div><div class="smeta"><span class="b bt">🎫 10–15 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小鱼山公园/@36.05885,120.33654,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 ~5 phút hướng Đông</div>
-    </div>
-    <div class="slbl">Chiều · Bát Đại Quan</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.052201,120.352919,'Bát Đại Quan','14:00')"><div class="snum">10</div><div class="sbody"><div class="stime">14:00 · 2.5 tiếng</div><div class="sname">Bát Đại Quan</div><div class="scn">八大关</div><div class="snote">Biệt thự Nga/Đức/Đan/Thụy. Thuê xe điện cho trẻ.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/八大关/@36.052201,120.352919,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 ~5 phút hướng Tây</div>
-    </div>
-    <div class="slbl">Hoàng hôn</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.05395,120.3304,'Đường Cầm Dữ ★ Hoàng hôn #1','17:00')"><div class="snum">11</div><div class="sbody"><div class="stime">17:00 · ★ HOÀNG HÔN #1</div><div class="sname">Đường Cầm Dữ 琴屿路</div><div class="scn"><b>Hoàng hôn đẹp nhất Qingdao.</b> Mặt trời lặn 18:40.</div><div class="smeta"><span class="b bs">🌅 Đẹp nhất Qingdao</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/琴屿路/@36.05395,120.3304,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 600m hướng Tây Nam</div>
-      <div class="stop" onclick="pin(36.052805,120.324005,'Tiểu Thanh Đảo','18:30')"><div class="snum">12</div><div class="sbody"><div class="stime">18:30 · 1 tiếng</div><div class="sname">Tiểu Thanh Đảo 小青岛</div><div class="scn">Hải đăng Đức 1900. <b>Đặt QR WeChat 魅力海滨 trước.</b></div><div class="smeta"><span class="b bb">📱 Đặt WeChat trước</span><span class="b bt">~30 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小青岛/@36.052805,120.324005,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-    </div>
-  </div>
-</div>
-
-<!-- N4 · 26/4 -->
-<div class="sheet d26" id="s26">
-  <div class="handle-zone" id="hz26"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 4 · Chủ nhật</div><div class="dtitle">Tế Nam Day Trip</div><div class="ddesc">Không có lịch Qingdao — khám phá Tế Nam (济南).</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/search/济南/@36.6512,117.1201,13z" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
-  <div class="sheet-body">
-    <div class="jcard">
-      <div class="jicon">🏯</div><div class="jtitle">Tế Nam · 济南</div>
-      <div class="jsub">Thành phố suối nước nóng — Báo Đột Tuyền + Đại Minh Hồ + phố cổ.<br><br>🚄 Tàu cao tốc ~1.5h từ Qingdao North · 🎫 Đặt trên 12306.cn</div>
-      <div class="jlinks">
-        <a class="jl jp" href="https://www.google.com/maps/search/趵突泉/@36.6572,116.9983,15z" target="_blank">📍 Báo Đột Tuyền</a>
-        <a class="jl js" href="https://www.google.com/maps/search/大明湖/@36.6712,116.9987,15z" target="_blank">📍 Đại Minh Hồ</a>
-      </div>
-    </div>
-    <div class="tips" style="margin-top:14px">
-      <div class="ttip">Lưu ý ngày Tế Nam</div>
-      <div class="tip"><span>Tàu đi:</span> Qingdao North → Jinan West ~1.5h, ~100 NDT</div>
-      <div class="tip"><span>Khởi hành:</span> Bắt tàu 8:00–9:00 sáng</div>
-      <div class="tip"><span>Báo Đột Tuyền:</span> Vé ~40 NDT</div>
-      <div class="tip"><span>Về:</span> Bắt tàu trước 18:00</div>
-    </div>
-  </div>
-</div>
-
-<!-- N5 · 27/4 -->
-<div class="sheet d27" id="s27">
-  <div class="handle-zone" id="hz27"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 5 · Thứ 2</div><div class="dtitle">Cáp treo + Bia + Chia tay</div><div class="ddesc">Cáp treo ngắm hoa, bia Tsingtao tươi, mua quà, hoàng hôn chia tay. Bay 22:00.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.065131,120.355922/36.07912,120.346834/36.070931,120.318702/36.0709,120.319/36.058454,120.320491" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
-  <div class="sheet-body">
-    <div class="slbl">Sáng</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.065131,120.355922,'Trung Sơn + Cáp treo','09:00')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · 2 tiếng</div><div class="sname">Trung Sơn + Cáp treo 中山公园</div><div class="scn">Cáp treo lên Taiping Mountain. Hoa mướn + tulip.</div><div class="smeta"><span class="b bt">🎫 ~120 NDT k/h</span><span class="b bf">Công viên miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/中山公园/@36.065131,120.355922,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 ~5 phút hướng Bắc</div>
-    </div>
-    <div class="slbl">Trưa</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.07912,120.346834,'Bảo tàng bia Tsingtao','11:30')"><div class="snum">2</div><div class="sbody"><div class="stime">11:30 · 2.5 tiếng</div><div class="sname">Bảo tàng bia Tsingtao 青岛啤酒博物馆</div><div class="scn">Bia tươi kèm vé. Ăn trưa tại đây. Hologram + drunk simulator.</div><div class="smeta"><span class="b bt">🎫 ~60–80 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/青岛啤酒博物馆/@36.07912,120.346834,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚕 ~8 phút hướng Tây</div>
-    </div>
-    <div class="slbl">Chiều · Mua quà</div>
-    <div class="stops">
-      <div class="stop" onclick="pin(36.070931,120.318702,'Phố Trung Sơn ★','15:30')"><div class="snum">3</div><div class="sbody"><div class="stime">15:30 · ★ MUA QUÀ</div><div class="sname">Phố Trung Sơn 中山路商圈</div><div class="scn">Bia Tsingtao lon · rong biển · hải sản khô.</div><div class="smeta"><span class="b bm">🛍 Mua quà về</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/中山路商圈/@36.070931,120.318702,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="stop" onclick="pin(36.0709,120.319,'Thượng Giới Lý','17:00')"><div class="snum">4</div><div class="sbody"><div class="stime">17:00 · 1 tiếng</div><div class="sname">Thượng Giới Lý 上街里</div><div class="scn">Phố đi bộ hiện đại. Tiếp tục mua sắm + ăn nhẹ.</div></div><a class="sgmap" href="https://www.google.com/maps/search/上街里/@36.0709,120.319,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-      <div class="trow">🚶 1.4km hướng Nam</div>
-      <div class="stop" onclick="pin(36.058454,120.320491,'Trạm Kiều ★ Chia tay','18:00')"><div class="snum">5</div><div class="sbody"><div class="stime">18:00 · ★ HOÀNG HÔN CHIA TAY</div><div class="sname">Trạm Kiều 栈桥</div><div class="scn">Hoàng hôn chia tay Qingdao → KS lấy đồ → sân bay.</div><div class="smeta"><span class="b bs">🌅 Chia tay</span><span class="b bx">🚕 Sân bay ~20:00</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/栈桥/@36.058454,120.320491,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
-    </div>
-    <div class="tips">
-      <div class="ttip">⏰ Timeline ra sân bay</div>
-      <div class="tip"><span>18:40</span> Mặt trời lặn tại Trạm Kiều</div>
-      <div class="tip"><span>19:00</span> Về KS lấy hành lý</div>
-      <div class="tip"><span>19:30</span> Taxi đến sân bay (~45 phút)</div>
-      <div class="tip"><span>20:15</span> Có mặt tại sân bay</div>
-      <div class="tip"><span>22:00</span> ✈️ Bay về Hà Nội</div>
-    </div>
-  </div>
-</div>
+<div id="sheetsContainer"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -408,28 +268,150 @@ map.setView([initLat, initLng], 15);
 
 let layers = [];
 
-const DAYS = {
-  '23': { color:'#4a9eff', zoom:15, center:[36.067,120.322],
-    pts:[[36.07202,120.32094,'KS Manxin','14:00'],[36.072938,120.324322,'Đảo Đại Bảo','15:00'],[36.0673,120.320634,'St. Michael','16:00'],[36.058454,120.320491,'Trạm Kiều ★','17:30']],
-    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.072938,120.324322/36.0673,120.320634/36.058454,120.320491',
-    btnCls:'d23-btn' },
-  '24': { color:'#2ecc8a', zoom:12, center:[36.09,120.47],
-    pts:[[36.07202,120.32094,'KS Manxin','Xuất phát'],[36.11347,120.54345,'Sa Tử Khẩu ★','09:00'],[36.054446,120.431213,'Tiểu Mạch Đảo','14:30'],[36.060096,120.390406,'Olympic ★','16:45']],
-    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.11347,120.54345/36.054446,120.431213/36.060096,120.390406',
-    btnCls:'d24-btn' },
-  '25': { color:'#ff7c4a', zoom:15, center:[36.059,120.331],
-    pts:[[36.05716,120.31044,'Tây Lăng 3 ★','09:00'],[36.0598699,120.31254,'Tây Lăng 1','09:35'],[36.06065,120.31324,'Lý Úy Nông','10:00'],[36.0637221,120.3229157,'Juxian','10:25'],[36.06216,120.32904,'Changzhou','10:40'],[36.0625,120.33051,'Long Giang','11:30'],[36.062511,120.331795,'Lão Xá','12:00'],[36.05982,120.3371,'Phúc Sơn','12:25'],[36.05885,120.33654,'Tiểu Ngư ★','12:50'],[36.052201,120.352919,'Bát Đại Quan','14:00'],[36.05395,120.3304,'Cầm Dữ ★','17:00'],[36.052805,120.324005,'Tiểu Thanh Đảo','18:30']],
-    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.052201,120.352919/36.06216,120.32904/36.05885,120.33654/36.062511,120.331795/36.0625,120.33051/36.05982,120.3371/36.0637221,120.3229157/36.06065,120.31324/36.0598699,120.31254/36.05716,120.31044/36.05395,120.3304/36.052805,120.324005',
-    btnCls:'d25-btn' },
-  '26': { color:'#f5c842', zoom:13, center:[36.66,117.0],
-    pts:[[36.6572,116.9983,'Báo Đột Tuyền','Sáng'],[36.6712,116.9987,'Đại Minh Hồ','Chiều']],
-    gmap:'https://www.google.com/maps/search/济南/@36.6512,117.1201,13z',
-    btnCls:'d26-btn' },
-  '27': { color:'#c97fff', zoom:14, center:[36.067,120.335],
-    pts:[[36.065131,120.355922,'Trung Sơn','09:00'],[36.07912,120.346834,'Bảo tàng bia','11:30'],[36.070931,120.318702,'Phố Trung Sơn','15:30'],[36.0709,120.319,'Thượng Giới Lý','17:00'],[36.058454,120.320491,'Trạm Kiều ★ Chia tay','18:00']],
-    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.065131,120.355922/36.07912,120.346834/36.070931,120.318702/36.0709,120.319/36.058454,120.320491',
-    btnCls:'d27-btn' }
+const SUPABASE_URL  = 'https://sfmwerurddclcttziweu.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbXdlcnVyZGRjbGN0dHppd2V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3Mzk2OTcsImV4cCI6MjA5MjMxNTY5N30.ML7Gwv6n1mkkJWZ399nenN1oPmo5OfSUn41_rBrhxN4';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let DAYS = {};
+
+// ── SUPABASE FETCH ──
+async function loadTripData() {
+  const [daysRes, stopsRes, trowsRes] = await Promise.all([
+    sb.from('days').select('*').order('sort_order'),
+    sb.from('stops').select('*').order('stop_number'),
+    sb.from('trows').select('*').order('after_stop')
+  ]);
+  if (daysRes.error) throw daysRes.error;
+  const days = daysRes.data;
+  const stopsByDay = {}, trowsByDay = {};
+  for (const day of days) {
+    stopsByDay[day.id] = (stopsRes.data || []).filter(s => s.day_id === day.id);
+    const tmap = {};
+    for (const t of (trowsRes.data || []).filter(t => t.day_id === day.id)) tmap[t.after_stop] = t.content;
+    trowsByDay[day.id] = tmap;
+  }
+  return { days, stopsByDay, trowsByDay };
+}
+
+function buildDaysMap(days, stopsByDay) {
+  const result = {};
+  for (const day of days) {
+    const stops = stopsByDay[day.id] || [];
+    result[day.day_key] = {
+      color: day.color, zoom: day.map_zoom,
+      center: [day.map_center.lat, day.map_center.lng],
+      pts: stops.filter(s => s.show_on_map !== false).map(s => [parseFloat(s.lat), parseFloat(s.lng), s.name, s.time_label || '']),
+      gmap: day.gmap_url
+    };
+  }
+  return result;
+}
+
+// ── RENDER ──
+const PIN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+const ROUTE_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>`;
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function q(s)   { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+const TYPE_ICON = {
+  'lưu trú': '🏨', 'cafe': '☕', 'ăn uống': '🍜',
+  'chụp ảnh/tham quan': '📸', 'sân bay': '✈️', 'trạm tàu/ga tàu': '🚄'
 };
+
+function renderStop(stop, trow) {
+  const icons = (stop.stop_type||[]).map(t => TYPE_ICON[t]||'').filter(Boolean).join('');
+  const costBadges = (stop.cost||[]).map(c => `<span class="b bt">${c}</span>`).join('');
+  const badges = (stop.badges||[]).map(b => `<span class="b ${b.type}">${b.text}</span>`).join('');
+  const allBadges = costBadges + badges;
+  return `
+<div class="stop" onclick="pin(${stop.lat},${stop.lng},'${q(stop.name)}','${q(stop.time_label)}')">
+  <div class="snum">${stop.stop_number}</div>
+  <div class="sbody">
+    ${stop.time_label ? `<div class="stime">${stop.time_label.slice(-5)}${stop.duration ? ` · ${esc(stop.duration)}` : ''}</div>` : ''}
+    <div class="sname">${esc(stop.name)}${icons ? `<span class="sico">${icons}</span>` : ''}</div>
+    ${stop.chinese_name ? `<div class="scn">${stop.chinese_name}${stop.address ? ` · ${esc(stop.address)}` : ''}</div>` : stop.address ? `<div class="scn">${esc(stop.address)}</div>` : ''}
+    ${stop.note ? `<div class="snote">${stop.note}</div>` : ''}
+    ${allBadges ? `<div class="smeta">${allBadges}</div>` : ''}
+  </div>
+  ${stop.gmap_url ? `<a class="sgmap" href="${esc(stop.gmap_url)}" target="_blank" onclick="event.stopPropagation()">${PIN_SVG}</a>` : ''}
+</div>${trow ? `<div class="trow">${esc(trow)}</div>` : ''}`;
+}
+
+function timeSection(timeLabel) {
+  if (!timeLabel) return null;
+  const hh = parseInt(timeLabel.slice(-5, -3), 10);
+  if (hh < 12) return 'SÁNG';
+  if (hh < 14) return 'TRƯA';
+  if (hh < 19) return 'CHIỀU';
+  return 'TỐI';
+}
+
+function renderSheetBody(dayKey, stops, trowMap) {
+  let html = '';
+  let lastSection = null;
+  for (const stop of stops) {
+    const section = timeSection(stop.time_label);
+    if (section && section !== lastSection) {
+      if (lastSection !== null) html += '</div>';
+      html += `<div class="slbl">${section}</div><div class="stops">`;
+      lastSection = section;
+    } else if (section && lastSection === null) {
+      html += `<div class="slbl">${section}</div><div class="stops">`;
+      lastSection = section;
+    }
+    html += renderStop(stop, trowMap[stop.stop_number]);
+  }
+  if (lastSection !== null) html += '</div>';
+  if (dayKey === '27') html += renderDay27Tips();
+  return html;
+}
+
+function renderJinanCard() {
+  return `<div class="jcard">
+  <div class="jicon">🏯</div><div class="jtitle">Tế Nam · 济南</div>
+  <div class="jsub">Thành phố suối nước nóng — Báo Đột Tuyền + Đại Minh Hồ + phố cổ.<br><br>🚄 Tàu cao tốc ~1.5h từ Qingdao North · 🎫 Đặt trên 12306.cn</div>
+  <div class="jlinks">
+    <a class="jl jp" href="https://www.google.com/maps/search/趵突泉/@36.6572,116.9983,15z" target="_blank">📍 Báo Đột Tuyền</a>
+    <a class="jl js" href="https://www.google.com/maps/search/大明湖/@36.6712,116.9987,15z" target="_blank">📍 Đại Minh Hồ</a>
+  </div>
+</div>
+<div class="tips" style="margin-top:14px">
+  <div class="ttip">Lưu ý ngày Tế Nam</div>
+  <div class="tip"><span>Tàu đi:</span> Qingdao North → Jinan West ~1.5h, ~100 NDT</div>
+  <div class="tip"><span>Khởi hành:</span> Bắt tàu 8:00–9:00 sáng</div>
+  <div class="tip"><span>Báo Đột Tuyền:</span> Vé ~40 NDT</div>
+  <div class="tip"><span>Về:</span> Bắt tàu trước 18:00</div>
+</div>`;
+}
+
+function renderDay27Tips() {
+  return `<div class="tips">
+  <div class="ttip">⏰ Timeline ra sân bay</div>
+  <div class="tip"><span>18:40</span> Mặt trời lặn tại Trạm Kiều</div>
+  <div class="tip"><span>19:00</span> Về KS lấy hành lý</div>
+  <div class="tip"><span>19:30</span> Taxi đến sân bay (~45 phút)</div>
+  <div class="tip"><span>20:15</span> Có mặt tại sân bay</div>
+  <div class="tip"><span>22:50</span> ✈️ Bay về Hà Nội · Đến HAN 1:50</div>
+</div>`;
+}
+
+function renderSheet(day, stops, trowMap, isFirst) {
+  const dk = day.day_key;
+  return `<div class="sheet d${dk}${isFirst ? ' visible' : ''}" id="s${dk}" style="display:${isFirst?'flex':'none'}">
+  <div class="handle-zone" id="hz${dk}">
+    <div class="handle-bar"></div>
+    <div class="day-info">
+      <div class="day-info-text">
+        <div class="dlbl">${esc(day.label)}</div>
+        <div class="dtitle">${esc(day.title)}</div>
+        ${day.description ? `<div class="ddesc">${esc(day.description)}</div>` : ''}
+      </div>
+      <a class="sheet-gmap-btn" href="${esc(day.gmap_url||'')}" target="_blank" onclick="event.stopPropagation()">${ROUTE_SVG}Route</a>
+    </div>
+  </div>
+  <div class="sheet-body">${renderSheetBody(dk, stops, trowMap)}</div>
+</div>`;
+}
 
 function mkIcon(color, n) {
   return L.divIcon({
@@ -598,21 +580,34 @@ function sw(d) {
 }
 
 // ── INIT ──
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   measureHdr();
 
-  const sheet23 = document.getElementById('s23');
-  sheet23.style.display = 'flex';
-  sheet23.style.transition = 'none';
-  // Force reflow so offsetHeight is accurate
-  sheet23.getBoundingClientRect();
-  sheet23.style.transform = `translateY(${getCollapsedY(sheet23)}px)`;
-  activeSheet = initSheet('23');
-  loadDay('23');
+  try {
+    const { days, stopsByDay, trowsByDay } = await loadTripData();
+    DAYS = buildDaysMap(days, stopsByDay);
+
+    const container = document.getElementById('sheetsContainer');
+    container.innerHTML = days.map((day, i) =>
+      renderSheet(day, stopsByDay[day.id] || [], trowsByDay[day.id] || {}, i === 0)
+    ).join('');
+
+    const firstKey = days[0].day_key;
+    const sheet1 = document.getElementById('s' + firstKey);
+    sheet1.getBoundingClientRect();
+    sheet1.style.transition = 'none';
+    sheet1.style.transform = `translateY(${getCollapsedY(sheet1)}px)`;
+    activeSheet = initSheet(firstKey);
+    activeDay = firstKey;
+    loadDay(firstKey);
+  } catch(e) {
+    console.error('Supabase load error:', e);
+    document.getElementById('sheetsContainer').innerHTML =
+      `<div style="position:fixed;top:50%;left:0;right:0;text-align:center;color:#8896b0;font-size:13px">Không tải được dữ liệu.<br><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:8px;border:1px solid #2a3347;background:#1e2535;color:#e8edf5;font-size:12px;cursor:pointer">Thử lại</button></div>`;
+  }
 
   setTimeout(() => {
     map.invalidateSize();
-    // Re-measure after fonts load (may change hdr height)
     measureHdr();
     if (activeSheet && !expanded) {
       activeSheet.style.transform = `translateY(${getCollapsedY(activeSheet)}px)`;
