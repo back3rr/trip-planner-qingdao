@@ -92,14 +92,17 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   padding: 8px 12px; border-radius: 10px;
   font-size: 12px; font-weight: 700;
   text-decoration: none; color: #fff;
-  transition: transform .15s; margin-top: 2px;
+  transition: transform .15s, box-shadow .15s; margin-top: 2px;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
 }
-.sheet-gmap-btn:active { transform: scale(.95); }
-.d23 .sheet-gmap-btn { background: var(--a23); }
-.d24 .sheet-gmap-btn { background: var(--a24); }
-.d25 .sheet-gmap-btn { background: var(--a25); }
-.d26 .sheet-gmap-btn { background: var(--a26); color: #1a1000; }
-.d27 .sheet-gmap-btn { background: var(--a27); }
+.sheet-gmap-btn:active { transform: scale(.95); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.d23 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(74,158,255,0.75), rgba(74,158,255,0.5)); }
+.d24 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(46,204,138,0.75), rgba(46,204,138,0.5)); }
+.d25 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(255,124,74,0.75), rgba(255,124,74,0.5)); }
+.d26 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(245,200,66,0.75), rgba(245,200,66,0.5)); color: #1a1000; }
+.d27 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(201,127,255,0.75), rgba(201,127,255,0.5)); }
 .sheet {
   position: fixed;
   top: var(--hdr-h); left: 0; right: 0; bottom: 0;
