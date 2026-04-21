@@ -137,14 +137,19 @@ body.light .d27 .sheet-gmap-btn { background: linear-gradient(135deg, #c97fff, #
   transition: transform .15s, box-shadow .15s; margin-top: 2px;
   border: 1px solid rgba(255,255,255,0.2);
   backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
 }
-.sheet-gmap-btn:active { transform: scale(.95); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-.d23 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(74,158,255,0.75), rgba(74,158,255,0.5)); }
-.d24 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(46,204,138,0.75), rgba(46,204,138,0.5)); }
-.d25 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(255,124,74,0.75), rgba(255,124,74,0.5)); }
-.d26 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(245,200,66,0.75), rgba(245,200,66,0.5)); color: #1a1000; }
-.d27 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(201,127,255,0.75), rgba(201,127,255,0.5)); }
+.sheet-gmap-btn:active { transform: scale(.95); }
+.d23 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(74,158,255,0.75), rgba(74,158,255,0.5)); box-shadow: 0 4px 16px rgba(74,158,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+.d24 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(46,204,138,0.75), rgba(46,204,138,0.5)); box-shadow: 0 4px 16px rgba(46,204,138,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+.d25 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(255,124,74,0.75), rgba(255,124,74,0.5)); box-shadow: 0 4px 16px rgba(255,124,74,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+.d26 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(245,200,66,0.75), rgba(245,200,66,0.5)); box-shadow: 0 4px 16px rgba(245,200,66,0.35), inset 0 1px 0 rgba(255,255,255,0.15); color: #1a1000; }
+.d27 .sheet-gmap-btn { background: linear-gradient(135deg, rgba(201,127,255,0.75), rgba(201,127,255,0.5)); box-shadow: 0 4px 16px rgba(201,127,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+body.light .d23 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(74,158,255,0.2), inset 0 1px 0 rgba(255,255,255,0.3); }
+body.light .d24 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(46,204,138,0.2), inset 0 1px 0 rgba(255,255,255,0.3); }
+body.light .d25 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(255,124,74,0.2), inset 0 1px 0 rgba(255,255,255,0.3); }
+body.light .d26 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(245,200,66,0.2), inset 0 1px 0 rgba(255,255,255,0.3); }
+body.light .d27 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(201,127,255,0.2), inset 0 1px 0 rgba(255,255,255,0.3); }
 .sheet {
   position: fixed;
   top: var(--hdr-h); left: 0; right: 0; bottom: 0;
