@@ -629,7 +629,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (code <= 82) return '🌦';
     return '⛈';
   }
-
   const badge = document.getElementById('wbadge');
   function clearSkeleton() {
     badge.style.animation = 'none';
@@ -640,10 +639,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     .then(r => r.json())
     .then(d => {
       clearSkeleton();
-      const code = d.daily.weathercode[0];
       const min = Math.round(d.daily.temperature_2m_min[0]);
       const max = Math.round(d.daily.temperature_2m_max[0]);
-      badge.textContent = `${weatherEmoji(code)} ${min}–${max}°C`;
+      badge.textContent = `${weatherEmoji(d.daily.weathercode[0])} ${min}–${max}°C`;
     })
     .catch(() => { clearSkeleton(); badge.textContent = '— °C'; });
 })();
