@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Thanh Đảo 青島 · 23–27/4/2026</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --bg: #0e1117; --card: #1e2535; --border: #2a3347; --surface: #161b26;
+  --a23: #4a9eff; --a24: #2ecc8a; --a25: #ff7c4a; --a26: #f5c842; --a27: #c97fff;
+  --text: #e8edf5; --muted: #8896b0;
+  --hdr-h: 88px;   /* title row + tabs row */
+  --map-h: 50vh;
+  --sheet-h: calc(50vh - var(--hdr-h) + 100vh - 50vh); /* fills bottom half + more */
+}
+
+@keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans SC', sans-serif; }
+
+/* ══ HEADER ══ */
+.hdr {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 400;
+  background: linear-gradient(135deg,#0e1117,#141c2e);
+  padding: 16px 16px 0; border-bottom: 1px solid var(--border);
+}
+.hdr-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.ttl {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+  letter-spacing: -.5px;
+  background: linear-gradient(90deg, #4a9eff, #c97fff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.wbadge {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 10px; font-size: 11px; color: var(--muted);
+}
+
+/* ══ TABS ══ */
+.tabs { display: flex; gap: 4px; overflow: visible; }
+.tab {
+  flex: 1; min-width: 0; padding: 7px 4px; border-radius: 9px 9px 0 0;
+  font-size: 11px; font-weight: 700; cursor: pointer; line-height: 1.4;
+  color: var(--muted); background: transparent; border: none;
+  border: 1px solid transparent; border-bottom: none;
+  position: relative; top: 1px; text-align: center;
+  transition: all .2s;
+}
+.tab.active { color: var(--text); border-color: var(--border); }
+.tab[data-d="23"].active { background:#131a2e; border-top: 2px solid var(--a23); color: var(--a23); }
+.tab[data-d="24"].active { background:#0e1e18; border-top: 2px solid var(--a24); color: var(--a24); }
+.tab[data-d="25"].active { background:#1e1510; border-top: 2px solid var(--a25); color: var(--a25); }
+.tab[data-d="26"].active { background:#1a1a14; border-top: 2px solid var(--a26); color: var(--a26); }
+.tab[data-d="27"].active { background:#17112a; border-top: 2px solid var(--a27); color: var(--a27); }
+
+/* ══ MAP — exactly 50vh below header ══ */
+.map-wrap {
+  position: fixed;
+  top: var(--hdr-h); left: 0; right: 0;
+  height: calc(50vh);   /* half screen */
+  z-index: 1;
+}
+#mainMap {
+  width: 100%; height: 100%;
+  filter: brightness(.88) saturate(.75);
+}
+
+/* ══ SHEET HEADER ROW ══ */
+.day-info {
+  width: 100%; padding-bottom: 10px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.day-info-text { flex: 1; min-width: 0; }
+.dlbl { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.dtitle { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; }
+.ddesc { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+.sheet-gmap-btn {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 5px;
+  padding: 8px 12px; border-radius: 10px;
+  font-size: 12px; font-weight: 700;
+  text-decoration: none; color: #fff;
+  transition: transform .15s; margin-top: 2px;
+}
+.sheet-gmap-btn:active { transform: scale(.95); }
+.d23 .sheet-gmap-btn { background: var(--a23); }
+.d24 .sheet-gmap-btn { background: var(--a24); }
+.d25 .sheet-gmap-btn { background: var(--a25); }
+.d26 .sheet-gmap-btn { background: var(--a26); color: #1a1000; }
+.d27 .sheet-gmap-btn { background: var(--a27); }
+.sheet {
+  position: fixed;
+  top: var(--hdr-h); left: 0; right: 0; bottom: 0;
+  transform: translateY(calc(100vh - var(--hdr-h) - 50vh));
+  transition: transform .38s cubic-bezier(.32,1,.52,1);
+  will-change: transform;
+  z-index: 200;
+  border-radius: 20px 20px 0 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 -4px 30px rgba(0,0,0,.5);
+}
+.sheet.visible { display: flex; }
+.sheet.expanded { transform: translateY(0); }
+
+/* drag handle */
+.handle-zone {
+  flex-shrink: 0; padding: 10px 16px 0;
+  cursor: grab; user-select: none;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.handle-zone:active { cursor: grabbing; }
+.handle-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--border); }
+
+/* scrollable body */
+.sheet-body {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 0 14px 40px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ══ STOPS ══ */
+.slbl { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); margin: 14px 0 7px; display: flex; align-items: center; gap: 8px; }
+.slbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.stops { display: flex; flex-direction: column; gap: 2px; }
+.stop {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 11px 11px 11px 14px; display: flex; gap: 10px;
+  position: relative; overflow: hidden; cursor: pointer;
+  transition: background .15s;
+}
+.stop::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.stop:active { background: #232d40; }
+.d23 .stop::before { background: var(--a23); } .d24 .stop::before { background: var(--a24); }
+.d25 .stop::before { background: var(--a25); } .d26 .stop::before { background: var(--a26); }
+.d27 .stop::before { background: var(--a27); }
+.snum { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.d23 .snum { background: rgba(74,158,255,.15); color: var(--a23); }
+.d24 .snum { background: rgba(46,204,138,.15); color: var(--a24); }
+.d25 .snum { background: rgba(255,124,74,.15); color: var(--a25); }
+.d26 .snum { background: rgba(245,200,66,.15); color: var(--a26); }
+.d27 .snum { background: rgba(201,127,255,.15); color: var(--a27); }
+.sbody { flex: 1; min-width: 0; }
+.stime { font-size: 10px; color: var(--muted); margin-bottom: 1px; font-weight: 600; }
+.sname { font-size: 13px; font-weight: 700; line-height: 1.3; }
+.scn { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.snote { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.smeta { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.b { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+.bs { background: rgba(245,200,66,.15); color: #f5c842; border: 1px solid rgba(245,200,66,.3); }
+.bm { background: rgba(255,80,80,.15);  color: #ff6060; border: 1px solid rgba(255,80,80,.3); }
+.bf { background: rgba(46,204,138,.15); color: var(--a24); border: 1px solid rgba(46,204,138,.3); }
+.bt { background: rgba(74,158,255,.15); color: var(--a23); border: 1px solid rgba(74,158,255,.3); }
+.bb { background: rgba(201,127,255,.15);color: var(--a27); border: 1px solid rgba(201,127,255,.3); }
+.bx { background: rgba(255,124,74,.15); color: var(--a25); border: 1px solid rgba(255,124,74,.3); }
+.sgmap { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); text-decoration: none; margin-top: 1px; align-self: flex-start; }
+.sgmap svg { width: 14px; height: 14px; }
+.trow { display: flex; align-items: center; gap: 8px; padding: 4px 8px; color: var(--muted); font-size: 11px; }
+.trow::before, .trow::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: .4; }
+.tips { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-top: 14px; }
+.ttip { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 7px; }
+.tip { font-size: 12px; line-height: 1.6; color: var(--muted); padding: 3px 0; border-bottom: 1px solid var(--border); }
+.tip:last-child { border-bottom: none; }
+.tip span { color: var(--text); font-weight: 600; }
+.jcard { background: linear-gradient(135deg,#1a1a0e,#1e1a08); border: 1px solid rgba(245,200,66,.3); border-radius: 14px; padding: 18px; text-align: center; }
+.jicon { font-size: 36px; margin-bottom: 7px; }
+.jtitle { font-family: 'Syne',sans-serif; font-size: 17px; font-weight: 800; color: #f5c842; margin-bottom: 5px; }
+.jsub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.jlinks { display: flex; gap: 8px; margin-top: 11px; justify-content: center; flex-wrap: wrap; }
+.jl { padding: 8px 13px; border-radius: 10px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+.jp { background: #f5c842; color: #1a1000; }
+.js { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+
+/* Leaflet popup dark */
+.leaflet-popup-content-wrapper { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 10px; font-family: 'Noto Sans SC', sans-serif; box-shadow: 0 4px 20px rgba(0,0,0,.6); }
+.leaflet-popup-tip { background: var(--card); }
+.leaflet-popup-content { font-size: 12px; line-height: 1.5; margin: 8px 12px; }
+.popup-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.popup-time { color: #8896b0; font-size: 11px; }
+.leaflet-container a.leaflet-popup-close-button { color: #8896b0; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="ttl">Thanh Đảo 青島</div>
+      <div class="sub">23–27 tháng 4, 2026 · Gia đình</div>
+    </div>
+    <div class="wbadge" id="wbadge" style="min-width:72px;color:var(--border);background:linear-gradient(90deg,var(--card) 25%,var(--border) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.2s infinite">···</div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-d="23" onclick="sw('23')">N1<br><small>23/4</small></div>
+    <div class="tab"        data-d="24" onclick="sw('24')">N2<br><small>24/4</small></div>
+    <div class="tab"        data-d="25" onclick="sw('25')">N3<br><small>25/4</small></div>
+    <div class="tab"        data-d="26" onclick="sw('26')">N4<br><small>26/4</small></div>
+    <div class="tab"        data-d="27" onclick="sw('27')">N5<br><small>27/4</small></div>
+  </div>
+</div>
+
+<!-- ══ MAP ══ -->
+<div class="map-wrap">
+  <div id="mainMap"></div>
+</div>
+
+<!-- ══ SHEETS ══ -->
+
+<!-- N1 · 23/4 -->
+<div class="sheet d23 visible" id="s23">
+  <div class="handle-zone" id="hz23">
+    <div class="handle-bar"></div>
+    <div class="day-info">
+      <div class="day-info-text">
+        <div class="dlbl">Ngày 1 · Thứ 5</div>
+        <div class="dtitle">Dạo quanh KS</div>
+        <div class="ddesc">Nghỉ ngơi rồi đi bộ các điểm gần Manxin. Hoàng hôn đầu tiên ở Trạm Kiều.</div>
+      </div>
+      <a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.072938,120.324322/36.0673,120.320634/36.058454,120.320491" target="_blank" onclick="event.stopPropagation()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route
+      </a>
+    </div>
+  </div>
+  <div class="sheet-body">
+    <div class="slbl">Chiều</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.07202,120.32094,'KS Manxin','14:00')"><div class="snum">1</div><div class="sbody"><div class="stime">14:00 · Check-in</div><div class="sname">KS Manxin Zhanqiao</div><div class="scn">曼信酒店栈桥 · 158 Jiaozhou Rd</div><div class="snote">Metro Line 3 ngay cạnh. Rooftop nổi tiếng.</div><div class="smeta"><span class="b bx">🚕 Từ sân bay ~1h</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/曼信酒店栈桥/@36.07202,120.32094,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 250m hướng Đông</div>
+      <div class="stop" onclick="pin(36.072938,120.324322,'Đảo Đại Bảo','15:00')"><div class="snum">2</div><div class="sbody"><div class="stime">15:00 · 60 phút</div><div class="sname">Đảo Đại Bảo</div><div class="scn">大鲍岛即墨路小商品市场</div><div class="snote">Khu phố cổ: graffiti wall + cafe + chợ Jimo.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/大鲍岛即墨路小商品市场/@36.072938,120.324322,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 500m hướng Nam</div>
+      <div class="stop" onclick="pin(36.0673,120.320634,'Nhà thờ St. Michael','16:00')"><div class="snum">3</div><div class="sbody"><div class="stime">16:00 · 60 phút</div><div class="sname">Nhà thờ St. Michael</div><div class="scn">圣弥厄尔教堂 · 15 Zhejiang Road</div><div class="snote">Gothic 2 tháp chuông 56m. <b>Đóng thứ Hai</b> nhưng chụp ngoài được.</div><div class="smeta"><span class="b bt">🎫 10 NDT vào trong</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/圣弥厄尔教堂/@36.0673,120.320634,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 1.2km xuống biển</div>
+      <div class="stop" onclick="pin(36.058454,120.320491,'Trạm Kiều ★','17:30')"><div class="snum">4</div><div class="sbody"><div class="stime">17:30 · ★ HOÀNG HÔN</div><div class="sname">Trạm Kiều</div><div class="scn">栈桥 · 14 Taiping Road</div><div class="snote">Cầu tàu 440m + Huilan Pavilion. Mặt trời lặn ~18:40.</div><div class="smeta"><span class="b bs">🌅 Hoàng hôn 18:40</span><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/栈桥/@36.058454,120.320491,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+    </div>
+  </div>
+</div>
+
+<!-- N2 · 24/4 -->
+<div class="sheet d24" id="s24">
+  <div class="handle-zone" id="hz24"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 2 · Thứ 6</div><div class="dtitle">Trục Đông</div><div class="ddesc">Sa Tử Khẩu sớm → về dần trung tâm. Hoàng hôn Olympic.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.11347,120.54345/36.054446,120.431213/36.060096,120.390406" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
+  <div class="sheet-body">
+    <div class="slbl">Sáng</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.11347,120.54345,'Sa Tử Khẩu ★ MANDATORY','09:00 · 3 tiếng')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · 3 tiếng · ★ MANDATORY</div><div class="sname">Sa Tử Khẩu</div><div class="scn">沙子口广场 · Laoshan</div><div class="snote">"Amalfi của Trung Quốc". Đứng phía Nam chụp về Bắc.</div><div class="smeta"><span class="b bm">⭐ Không thể bỏ</span><span class="b bx">🚗 ~600 NDT cả ngày</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/沙子口广场/@36.11347,120.54345,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 ~20 phút về trung tâm</div>
+    </div>
+    <div class="slbl">Chiều</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.054446,120.431213,'Tiểu Mạch Đảo','14:30 · 2 tiếng')"><div class="snum">2</div><div class="sbody"><div class="stime">14:30 · 2 tiếng</div><div class="sname">Tiểu Mạch Đảo</div><div class="scn">小麦岛公园</div><div class="snote">Đảo Ghibli — lawn xanh, cây trái tim.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小麦岛公园/@36.054446,120.431213,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 15 phút</div>
+      <div class="stop" onclick="pin(36.060096,120.390406,'Olympic Center ★','16:45')"><div class="snum">3</div><div class="sbody"><div class="stime">16:45 · ★ HOÀNG HÔN</div><div class="sname">Trung tâm Olympic</div><div class="scn">奥帆中心</div><div class="snote">Light show ~18:30. Mặt trời lặn ~18:40.</div><div class="smeta"><span class="b bs">🌅 Hoàng hôn + Light show</span><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/奥帆中心/@36.060096,120.390406,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+    </div>
+  </div>
+</div>
+
+<!-- N3 · 25/4 -->
+<div class="sheet d25" id="s25">
+  <div class="handle-zone" id="hz25"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 3 · Thứ 7</div><div class="dtitle">Old Town Deep Dive</div><div class="ddesc">Tây → Đông: Tây Lăng sáng sớm, xuyên Old Town, Bát Đại Quan chiều. Hoàng hôn #1 tại Cầm Dữ.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.05716,120.31044/36.0598699,120.31254/36.06065,120.31324/36.0637221,120.3229157/36.06216,120.32904/36.0625,120.33051/36.062511,120.331795/36.05982,120.3371/36.05885,120.33654/36.052201,120.352919/36.05395,120.3304/36.052805,120.324005" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
+  <div class="sheet-body">
+    <div class="slbl">Sáng · Tây Lăng</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.05716,120.31044,'Tây Lăng Hiệp 3 ★ Little Kamakura','09:00')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · ★ Little Kamakura</div><div class="sname">Tây Lăng Hiệp 3 西陵峡三路</div><div class="scn">Blue railings + biển. Red No Entry sign viral.</div><div class="smeta"><span class="b bm">📸 Spot viral · ánh sáng sáng đẹp</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/西陵峡三路/@36.05716,120.31044,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 350m dọc bờ biển</div>
+      <div class="stop" onclick="pin(36.0598699,120.31254,'Tây Lăng Hiệp 1','09:35')"><div class="snum">2</div><div class="sbody"><div class="stime">09:35 · 20p</div><div class="sname">Tây Lăng Hiệp 1 西陵峡一路</div><div class="scn">Miyazaki + mái nhà đỏ + biển.</div></div><a class="sgmap" href="https://www.google.com/maps/search/西陵峡一路/@36.0598699,120.31254,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 100m hướng Bắc</div>
+      <div class="stop" onclick="pin(36.06065,120.31324,'Lý Úy Nông','10:00')"><div class="snum">3</div><div class="sbody"><div class="stime">10:00 · 20p</div><div class="sname">Công viên Lý Úy Nông 李慰农公园</div><div class="scn">2 cây thông foreground chụp Trạm Kiều.</div></div><a class="sgmap" href="https://www.google.com/maps/search/李慰农公园/@36.06065,120.31324,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 950m hướng Đông Bắc</div>
+    </div>
+    <div class="slbl">Trưa · Old Town</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.0637221,120.3229157,'Juxian','10:25')"><div class="snum">4</div><div class="sbody"><div class="stime">10:25 · 10p</div><div class="sname">Đường Juxian 莒县路</div><div class="scn">Châu Âu cổ điển ít người.</div></div><a class="sgmap" href="https://www.google.com/maps/search/莒县路/@36.0637221,120.3229157,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 600m hướng Đông Nam</div>
+      <div class="stop" onclick="pin(36.06216,120.32904,'Đường Changzhou','10:40')"><div class="snum">5</div><div class="sbody"><div class="stime">10:40 · café + ăn sáng muộn</div><div class="sname">Đường Changzhou 常州路</div><div class="scn">Kiến trúc Đông-Tây. Nghỉ café tại đây.</div></div><a class="sgmap" href="https://www.google.com/maps/search/常州路/@36.06216,120.32904,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 150m hướng Đông</div>
+      <div class="stop" onclick="pin(36.0625,120.33051,'Long Giang Graffiti','11:30')"><div class="snum">6</div><div class="sbody"><div class="stime">11:30 · 25p</div><div class="sname">Đường Long Giang 龙江路</div><div class="scn">Graffiti wall Ghibli. Trẻ con rất thích.</div></div><a class="sgmap" href="https://www.google.com/maps/search/龙江路/@36.0625,120.33051,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 100m hướng Đông</div>
+      <div class="stop" onclick="pin(36.062511,120.331795,'Nhà cũ Lão Xá','12:00')"><div class="snum">7</div><div class="sbody"><div class="stime">12:00 · 20p</div><div class="sname">Nhà cũ Lão Xá 老舍故居</div><div class="scn">Nhà văn Lão Xá. <b>Đóng thứ Hai.</b></div></div><a class="sgmap" href="https://www.google.com/maps/search/老舍故居/@36.062511,120.331795,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 550m hướng Đông Nam</div>
+      <div class="stop" onclick="pin(36.05982,120.3371,'Phúc Sơn','12:25')"><div class="snum">8</div><div class="sbody"><div class="stime">12:25 · 20p</div><div class="sname">Đường nhánh Phúc Sơn 福山支路</div><div class="scn">Kiến trúc Đức retro.</div></div><a class="sgmap" href="https://www.google.com/maps/search/福山支路/@36.05982,120.3371,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 120m hướng Nam</div>
+      <div class="stop" onclick="pin(36.05885,120.33654,'Núi Tiểu Ngư ★ Panorama','12:50')"><div class="snum">9</div><div class="sbody"><div class="stime">12:50 · ★ PANORAMA + ăn trưa</div><div class="sname">Núi Tiểu Ngư</div><div class="scn">小鱼山公园</div><div class="snote">Panorama #1 Qingdao. Lanchao Pavilion tầng 3.</div><div class="smeta"><span class="b bt">🎫 10–15 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小鱼山公园/@36.05885,120.33654,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 ~5 phút hướng Đông</div>
+    </div>
+    <div class="slbl">Chiều · Bát Đại Quan</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.052201,120.352919,'Bát Đại Quan','14:00')"><div class="snum">10</div><div class="sbody"><div class="stime">14:00 · 2.5 tiếng</div><div class="sname">Bát Đại Quan</div><div class="scn">八大关</div><div class="snote">Biệt thự Nga/Đức/Đan/Thụy. Thuê xe điện cho trẻ.</div><div class="smeta"><span class="b bf">Miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/八大关/@36.052201,120.352919,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 ~5 phút hướng Tây</div>
+    </div>
+    <div class="slbl">Hoàng hôn</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.05395,120.3304,'Đường Cầm Dữ ★ Hoàng hôn #1','17:00')"><div class="snum">11</div><div class="sbody"><div class="stime">17:00 · ★ HOÀNG HÔN #1</div><div class="sname">Đường Cầm Dữ 琴屿路</div><div class="scn"><b>Hoàng hôn đẹp nhất Qingdao.</b> Mặt trời lặn 18:40.</div><div class="smeta"><span class="b bs">🌅 Đẹp nhất Qingdao</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/琴屿路/@36.05395,120.3304,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 600m hướng Tây Nam</div>
+      <div class="stop" onclick="pin(36.052805,120.324005,'Tiểu Thanh Đảo','18:30')"><div class="snum">12</div><div class="sbody"><div class="stime">18:30 · 1 tiếng</div><div class="sname">Tiểu Thanh Đảo 小青岛</div><div class="scn">Hải đăng Đức 1900. <b>Đặt QR WeChat 魅力海滨 trước.</b></div><div class="smeta"><span class="b bb">📱 Đặt WeChat trước</span><span class="b bt">~30 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/小青岛/@36.052805,120.324005,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+    </div>
+  </div>
+</div>
+
+<!-- N4 · 26/4 -->
+<div class="sheet d26" id="s26">
+  <div class="handle-zone" id="hz26"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 4 · Chủ nhật</div><div class="dtitle">Tế Nam Day Trip</div><div class="ddesc">Không có lịch Qingdao — khám phá Tế Nam (济南).</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/search/济南/@36.6512,117.1201,13z" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
+  <div class="sheet-body">
+    <div class="jcard">
+      <div class="jicon">🏯</div><div class="jtitle">Tế Nam · 济南</div>
+      <div class="jsub">Thành phố suối nước nóng — Báo Đột Tuyền + Đại Minh Hồ + phố cổ.<br><br>🚄 Tàu cao tốc ~1.5h từ Qingdao North · 🎫 Đặt trên 12306.cn</div>
+      <div class="jlinks">
+        <a class="jl jp" href="https://www.google.com/maps/search/趵突泉/@36.6572,116.9983,15z" target="_blank">📍 Báo Đột Tuyền</a>
+        <a class="jl js" href="https://www.google.com/maps/search/大明湖/@36.6712,116.9987,15z" target="_blank">📍 Đại Minh Hồ</a>
+      </div>
+    </div>
+    <div class="tips" style="margin-top:14px">
+      <div class="ttip">Lưu ý ngày Tế Nam</div>
+      <div class="tip"><span>Tàu đi:</span> Qingdao North → Jinan West ~1.5h, ~100 NDT</div>
+      <div class="tip"><span>Khởi hành:</span> Bắt tàu 8:00–9:00 sáng</div>
+      <div class="tip"><span>Báo Đột Tuyền:</span> Vé ~40 NDT</div>
+      <div class="tip"><span>Về:</span> Bắt tàu trước 18:00</div>
+    </div>
+  </div>
+</div>
+
+<!-- N5 · 27/4 -->
+<div class="sheet d27" id="s27">
+  <div class="handle-zone" id="hz27"><div class="handle-bar"></div><div class="day-info"><div class="day-info-text"><div class="dlbl">Ngày 5 · Thứ 2</div><div class="dtitle">Cáp treo + Bia + Chia tay</div><div class="ddesc">Cáp treo ngắm hoa, bia Tsingtao tươi, mua quà, hoàng hôn chia tay. Bay 22:00.</div></div><a class="sheet-gmap-btn" href="https://www.google.com/maps/dir/36.07202,120.32094/36.065131,120.355922/36.07912,120.346834/36.070931,120.318702/36.0709,120.319/36.058454,120.320491" target="_blank" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>Route</a></div></div>
+  <div class="sheet-body">
+    <div class="slbl">Sáng</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.065131,120.355922,'Trung Sơn + Cáp treo','09:00')"><div class="snum">1</div><div class="sbody"><div class="stime">09:00 · 2 tiếng</div><div class="sname">Trung Sơn + Cáp treo 中山公园</div><div class="scn">Cáp treo lên Taiping Mountain. Hoa mướn + tulip.</div><div class="smeta"><span class="b bt">🎫 ~120 NDT k/h</span><span class="b bf">Công viên miễn phí</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/中山公园/@36.065131,120.355922,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 ~5 phút hướng Bắc</div>
+    </div>
+    <div class="slbl">Trưa</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.07912,120.346834,'Bảo tàng bia Tsingtao','11:30')"><div class="snum">2</div><div class="sbody"><div class="stime">11:30 · 2.5 tiếng</div><div class="sname">Bảo tàng bia Tsingtao 青岛啤酒博物馆</div><div class="scn">Bia tươi kèm vé. Ăn trưa tại đây. Hologram + drunk simulator.</div><div class="smeta"><span class="b bt">🎫 ~60–80 NDT</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/青岛啤酒博物馆/@36.07912,120.346834,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚕 ~8 phút hướng Tây</div>
+    </div>
+    <div class="slbl">Chiều · Mua quà</div>
+    <div class="stops">
+      <div class="stop" onclick="pin(36.070931,120.318702,'Phố Trung Sơn ★','15:30')"><div class="snum">3</div><div class="sbody"><div class="stime">15:30 · ★ MUA QUÀ</div><div class="sname">Phố Trung Sơn 中山路商圈</div><div class="scn">Bia Tsingtao lon · rong biển · hải sản khô.</div><div class="smeta"><span class="b bm">🛍 Mua quà về</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/中山路商圈/@36.070931,120.318702,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="stop" onclick="pin(36.0709,120.319,'Thượng Giới Lý','17:00')"><div class="snum">4</div><div class="sbody"><div class="stime">17:00 · 1 tiếng</div><div class="sname">Thượng Giới Lý 上街里</div><div class="scn">Phố đi bộ hiện đại. Tiếp tục mua sắm + ăn nhẹ.</div></div><a class="sgmap" href="https://www.google.com/maps/search/上街里/@36.0709,120.319,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+      <div class="trow">🚶 1.4km hướng Nam</div>
+      <div class="stop" onclick="pin(36.058454,120.320491,'Trạm Kiều ★ Chia tay','18:00')"><div class="snum">5</div><div class="sbody"><div class="stime">18:00 · ★ HOÀNG HÔN CHIA TAY</div><div class="sname">Trạm Kiều 栈桥</div><div class="scn">Hoàng hôn chia tay Qingdao → KS lấy đồ → sân bay.</div><div class="smeta"><span class="b bs">🌅 Chia tay</span><span class="b bx">🚕 Sân bay ~20:00</span></div></div><a class="sgmap" href="https://www.google.com/maps/search/栈桥/@36.058454,120.320491,17z" target="_blank" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a></div>
+    </div>
+    <div class="tips">
+      <div class="ttip">⏰ Timeline ra sân bay</div>
+      <div class="tip"><span>18:40</span> Mặt trời lặn tại Trạm Kiều</div>
+      <div class="tip"><span>19:00</span> Về KS lấy hành lý</div>
+      <div class="tip"><span>19:30</span> Taxi đến sân bay (~45 phút)</div>
+      <div class="tip"><span>20:15</span> Có mặt tại sân bay</div>
+      <div class="tip"><span>22:00</span> ✈️ Bay về Hà Nội</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ── MAP INIT ──
+// Use OpenStreetMap tiles (reliable fallback) + CartoDB dark
+const map = L.map('mainMap', { zoomControl: false, attributionControl: false });
+
+// Use CartoDB dark tiles (WGS-84 tile index)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  subdomains: 'abcd', maxZoom: 19
+}).addTo(map);
+
+// ── GCJ-02 → WGS-84 conversion ──
+// Google Maps URLs in China encode coords as GCJ-02 (Mars Coords).
+// OSM/CartoDB tiles use WGS-84. Convert before placing markers.
+function gcj2wgs(lat, lng) {
+  const a = 6378245.0, ee = 0.00669342162296594323;
+  const PI = Math.PI;
+  function tLat(x, y) {
+    let r = -100+2*x+3*y+0.2*y*y+0.1*x*y+0.2*Math.sqrt(Math.abs(x));
+    r += (20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;
+    r += (20*Math.sin(y*PI)+40*Math.sin(y/3*PI))*2/3;
+    r += (160*Math.sin(y/12*PI)+320*Math.sin(y*PI/30))*2/3;
+    return r;
+  }
+  function tLng(x, y) {
+    let r = 300+x+2*y+0.1*x*x+0.1*x*y+0.1*Math.sqrt(Math.abs(x));
+    r += (20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;
+    r += (20*Math.sin(x*PI)+40*Math.sin(x/3*PI))*2/3;
+    r += (150*Math.sin(x/12*PI)+300*Math.sin(x*PI/30))*2/3;
+    return r;
+  }
+  const dlat = tLat(lng-105, lat-35);
+  const dlng = tLng(lng-105, lat-35);
+  const radlat = lat/180*PI;
+  let magic = Math.sin(radlat);
+  magic = 1 - ee*magic*magic;
+  const sq = Math.sqrt(magic);
+  const dlatR = dlat*180/((a*(1-ee))/(magic*sq)*PI);
+  const dlngR = dlng*180/(a/sq*Math.cos(radlat)*PI);
+  return [lat - dlatR, lng - dlngR];
+}
+
+const [initLat, initLng] = gcj2wgs(36.067, 120.322);
+map.setView([initLat, initLng], 15);
+
+let layers = [];
+
+const DAYS = {
+  '23': { color:'#4a9eff', zoom:15, center:[36.067,120.322],
+    pts:[[36.07202,120.32094,'KS Manxin','14:00'],[36.072938,120.324322,'Đảo Đại Bảo','15:00'],[36.0673,120.320634,'St. Michael','16:00'],[36.058454,120.320491,'Trạm Kiều ★','17:30']],
+    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.072938,120.324322/36.0673,120.320634/36.058454,120.320491',
+    btnCls:'d23-btn' },
+  '24': { color:'#2ecc8a', zoom:12, center:[36.09,120.47],
+    pts:[[36.07202,120.32094,'KS Manxin','Xuất phát'],[36.11347,120.54345,'Sa Tử Khẩu ★','09:00'],[36.054446,120.431213,'Tiểu Mạch Đảo','14:30'],[36.060096,120.390406,'Olympic ★','16:45']],
+    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.11347,120.54345/36.054446,120.431213/36.060096,120.390406',
+    btnCls:'d24-btn' },
+  '25': { color:'#ff7c4a', zoom:15, center:[36.059,120.331],
+    pts:[[36.05716,120.31044,'Tây Lăng 3 ★','09:00'],[36.0598699,120.31254,'Tây Lăng 1','09:35'],[36.06065,120.31324,'Lý Úy Nông','10:00'],[36.0637221,120.3229157,'Juxian','10:25'],[36.06216,120.32904,'Changzhou','10:40'],[36.0625,120.33051,'Long Giang','11:30'],[36.062511,120.331795,'Lão Xá','12:00'],[36.05982,120.3371,'Phúc Sơn','12:25'],[36.05885,120.33654,'Tiểu Ngư ★','12:50'],[36.052201,120.352919,'Bát Đại Quan','14:00'],[36.05395,120.3304,'Cầm Dữ ★','17:00'],[36.052805,120.324005,'Tiểu Thanh Đảo','18:30']],
+    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.052201,120.352919/36.06216,120.32904/36.05885,120.33654/36.062511,120.331795/36.0625,120.33051/36.05982,120.3371/36.0637221,120.3229157/36.06065,120.31324/36.0598699,120.31254/36.05716,120.31044/36.05395,120.3304/36.052805,120.324005',
+    btnCls:'d25-btn' },
+  '26': { color:'#f5c842', zoom:13, center:[36.66,117.0],
+    pts:[[36.6572,116.9983,'Báo Đột Tuyền','Sáng'],[36.6712,116.9987,'Đại Minh Hồ','Chiều']],
+    gmap:'https://www.google.com/maps/search/济南/@36.6512,117.1201,13z',
+    btnCls:'d26-btn' },
+  '27': { color:'#c97fff', zoom:14, center:[36.067,120.335],
+    pts:[[36.065131,120.355922,'Trung Sơn','09:00'],[36.07912,120.346834,'Bảo tàng bia','11:30'],[36.070931,120.318702,'Phố Trung Sơn','15:30'],[36.0709,120.319,'Thượng Giới Lý','17:00'],[36.058454,120.320491,'Trạm Kiều ★ Chia tay','18:00']],
+    gmap:'https://www.google.com/maps/dir/36.07202,120.32094/36.065131,120.355922/36.07912,120.346834/36.070931,120.318702/36.0709,120.319/36.058454,120.320491',
+    btnCls:'d27-btn' }
+};
+
+function mkIcon(color, n) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:26px;height:26px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.6);font-family:sans-serif">${n}</div>`,
+    iconSize:[26,26], iconAnchor:[13,13], popupAnchor:[0,-16]
+  });
+}
+
+function loadDay(d) {
+  layers.forEach(l => map.removeLayer(l));
+  layers = [];
+  const data = DAYS[d];
+  // Convert center GCJ02→WGS84 for map view
+  const [clat, clng] = gcj2wgs(data.center[0], data.center[1]);
+  map.flyTo([clat, clng], data.zoom, { duration: .65 });
+  data.pts.forEach((p,i) => {
+    const [wlat, wlng] = gcj2wgs(p[0], p[1]);
+    const m = L.marker([wlat, wlng], { icon: mkIcon(data.color, i+1) }).addTo(map);
+    m.bindPopup(`<div class="popup-name">${p[2]}</div><div class="popup-time">${p[3]}</div>`);
+    layers.push(m);
+  });
+  if (data.pts.length > 1) {
+    const latlngs = data.pts.map(p => { const [w0,w1] = gcj2wgs(p[0],p[1]); return [w0,w1]; });
+    const line = L.polyline(latlngs, {
+      color: data.color, weight: 2.5, opacity: .65, dashArray: '6,5'
+    }).addTo(map);
+    layers.push(line);
+  }
+}
+
+function pin(lat, lng, name, time) {
+  if (expanded && activeSheet) expand(activeSheet, false);
+  const [wlat, wlng] = gcj2wgs(lat, lng);
+  map.flyTo([wlat, wlng], 17, { duration: .7 });
+  L.popup().setLatLng([wlat, wlng])
+    .setContent(`<div class="popup-name">${name}</div><div class="popup-time">${time}</div>`)
+    .openOn(map);
+}
+
+// ── SHEET DRAG ──
+let activeDay = '23';
+let activeSheet = null;
+let expanded = false;
+let dragging = false;
+let startY = 0;
+
+function measureHdr() {
+  const hdrH = document.querySelector('.hdr').offsetHeight;
+  document.documentElement.style.setProperty('--hdr-h', hdrH + 'px');
+  return hdrH;
+}
+
+function getCollapsedY(sheet) {
+  // sheet.offsetHeight = 100vh - hdrH (actual pixels)
+  // collapsed: show 50vh → translateY = sheetH - 50vh
+  return sheet.offsetHeight - window.innerHeight * 0.5;
+}
+
+function getExpandedY() {
+  return 0; // translateY(0): sheet top = 100vh - sheetH = hdrH ✓
+}
+
+function expand(sheet, yes) {
+  sheet.style.transition = 'transform .38s cubic-bezier(.32,1,.52,1)';
+  if (yes) {
+    sheet.style.transform = 'translateY(0)';
+  } else {
+    sheet.style.transform = `translateY(${getCollapsedY(sheet)}px)`;
+    sheet.querySelector('.sheet-body').scrollTop = 0;
+  }
+  expanded = yes;
+}
+
+function initSheet(d) {
+  const sheet = document.getElementById('s' + d);
+  const hz = document.getElementById('hz' + d);
+  const body = sheet.querySelector('.sheet-body');
+  if (sheet._dragInit) return sheet;
+  sheet._dragInit = true;
+
+  function start(y) { startY = y; dragging = false; sheet.style.transition = 'none'; }
+  function move(y) {
+    const dy = y - startY;
+    if (!dragging) {
+      if (Math.abs(dy) < 5) return;
+      dragging = true;
+    }
+    const colY = getCollapsedY(sheet);
+    if (expanded) {
+      if (dy > 0) sheet.style.transform = `translateY(${Math.min(colY, dy)}px)`;
+    } else {
+      if (dy < 0) sheet.style.transform = `translateY(${Math.max(0, colY + dy)}px)`;
+    }
+  }
+  function end(y) {
+    if (!dragging) return;
+    const dy = y - startY;
+    expand(sheet, expanded ? dy < 60 : dy < -50);
+    dragging = false;
+  }
+
+  // Handle zone: always drag to expand/collapse
+  hz.addEventListener('touchstart', e => start(e.touches[0].clientY), {passive:true});
+  hz.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientY); }, {passive:false});
+  hz.addEventListener('touchend', e => end(e.changedTouches[0].clientY));
+  hz.addEventListener('mousedown', e => start(e.clientY));
+  document.addEventListener('mousemove', e => { if (dragging) move(e.clientY); });
+  document.addEventListener('mouseup', e => { if (dragging) end(e.clientY); });
+
+  // Body touch:
+  // - Collapsed: kéo lên bất kỳ đâu để expand
+  // - Expanded: kéo xuống chỉ khi đã ở đầu nội dung (scrollTop=0) mới collapse
+  let bodyTouchY = 0;
+  let bodyScrollTop0 = 0;
+  let bodyMode = null; // 'sheet' | 'scroll'
+
+  body.addEventListener('touchstart', e => {
+    bodyTouchY = e.touches[0].clientY;
+    bodyScrollTop0 = body.scrollTop;
+    bodyMode = null;
+    if (!expanded) start(e.touches[0].clientY);
+  }, {passive:true});
+
+  body.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - bodyTouchY;
+    if (bodyMode === null && Math.abs(dy) > 5) {
+      if (!expanded) {
+        bodyMode = dy < 0 ? 'sheet' : 'scroll';
+      } else {
+        bodyMode = (dy > 0 && bodyScrollTop0 === 0) ? 'sheet' : 'scroll';
+        if (bodyMode === 'sheet') start(bodyTouchY);
+      }
+    }
+    if (bodyMode === 'sheet') {
+      e.preventDefault();
+      move(e.touches[0].clientY);
+    }
+  }, {passive:false});
+
+  body.addEventListener('touchend', e => {
+    if (bodyMode === 'sheet' && dragging) end(e.changedTouches[0].clientY);
+    bodyMode = null;
+  });
+
+  hz.addEventListener('click', () => { if (!dragging) expand(sheet, !expanded); });
+  return sheet;
+}
+
+function sw(d) {
+  // hide current
+  if (activeSheet) { activeSheet.style.display = 'none'; }
+  // update tabs
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-d="${d}"]`).classList.add('active');
+  activeDay = d;
+  expanded = false;
+  // show new sheet
+  const sheet = document.getElementById('s' + d);
+  sheet.style.display = 'flex';
+  const colY = getCollapsedY(sheet);
+  sheet.style.transition = 'none';
+  sheet.style.transform = `translateY(${colY}px)`;
+  activeSheet = initSheet(d);
+  loadDay(d);
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  measureHdr();
+
+  const sheet23 = document.getElementById('s23');
+  sheet23.style.display = 'flex';
+  sheet23.style.transition = 'none';
+  // Force reflow so offsetHeight is accurate
+  sheet23.getBoundingClientRect();
+  sheet23.style.transform = `translateY(${getCollapsedY(sheet23)}px)`;
+  activeSheet = initSheet('23');
+  loadDay('23');
+
+  setTimeout(() => {
+    map.invalidateSize();
+    // Re-measure after fonts load (may change hdr height)
+    measureHdr();
+    if (activeSheet && !expanded) {
+      activeSheet.style.transform = `translateY(${getCollapsedY(activeSheet)}px)`;
+    }
+  }, 300);
+});
+
+// ── WEATHER ──
+(function() {
+  function weatherEmoji(code) {
+    if (code === 0) return '☀️';
+    if (code <= 3)  return '🌤';
+    if (code <= 48) return '🌫';
+    if (code <= 67) return '🌧';
+    if (code <= 77) return '🌨';
+    if (code <= 82) return '🌦';
+    return '⛈';
+  }
+  const badge = document.getElementById('wbadge');
+  function clearSkeleton() {
+    badge.style.animation = 'none';
+    badge.style.background = '';
+    badge.style.color = '';
+  }
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=36.067&longitude=120.322&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia%2FShanghai&forecast_days=1')
+    .then(r => r.json())
+    .then(d => {
+      clearSkeleton();
+      const min = Math.round(d.daily.temperature_2m_min[0]);
+      const max = Math.round(d.daily.temperature_2m_max[0]);
+      badge.textContent = `${weatherEmoji(d.daily.weathercode[0])} ${min}–${max}°C`;
+    })
+    .catch(() => { clearSkeleton(); badge.textContent = '— °C'; });
+})();
+
+// Re-measure on resize
+window.addEventListener('resize', () => {
+  measureHdr();
+  if (activeSheet) {
+    if (!expanded) activeSheet.style.transform = `translateY(${getCollapsedY(activeSheet)}px)`;
+  }
+  map.invalidateSize();
+});
+</script>
+</body>
+</html>
