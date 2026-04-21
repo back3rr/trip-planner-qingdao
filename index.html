@@ -6,6 +6,7 @@
 <title>Thanh Đảo 青島 · 23–27/4/2026</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2/tsparticles.slim.bundle.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Borel&display=swap');
 
@@ -200,7 +201,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 <!-- ══ HEADER ══ -->
 <div class="hdr">
-  <canvas id="wxCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s"></canvas>
+  <div id="wxParticles" style="position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit"></div>
   <div class="hdr-top" style="position:relative;z-index:1">
     <div>
       <div class="ttl">Thanh Đảo 青島</div>
@@ -619,6 +620,85 @@ window.addEventListener('DOMContentLoaded', async () => {
   }, 300);
 });
 
+// ── WEATHER PARTICLES ──
+function startParticles(code) {
+  if (typeof tsParticles === 'undefined') return;
+  let config;
+
+  if (code === 0) {
+    // Sunny — golden floating sparkles
+    config = {
+      particles: {
+        number: { value: 40 },
+        color: { value: ['#ffd700', '#ffb300', '#ffe066'] },
+        shape: { type: 'circle' },
+        opacity: { value: { min: 0.2, max: 0.6 }, animation: { enable: true, speed: 0.5, sync: false } },
+        size: { value: { min: 1, max: 3 } },
+        move: { enable: true, speed: 0.6, direction: 'top', random: true, outModes: 'out' },
+        life: { duration: { value: 4 } }
+      },
+      background: { color: 'transparent' }
+    };
+  } else if (code <= 3) {
+    // Partly cloudy — subtle floating dots
+    config = {
+      particles: {
+        number: { value: 25 },
+        color: { value: '#c8d8ff' },
+        shape: { type: 'circle' },
+        opacity: { value: { min: 0.1, max: 0.35 } },
+        size: { value: { min: 2, max: 5 } },
+        move: { enable: true, speed: 0.4, direction: 'right', random: true, outModes: 'out' }
+      },
+      background: { color: 'transparent' }
+    };
+  } else if (code <= 67) {
+    // Rain
+    config = {
+      particles: {
+        number: { value: code <= 48 ? 40 : 80 },
+        color: { value: '#8ec8ff' },
+        shape: { type: 'line' },
+        opacity: { value: { min: 0.3, max: 0.7 } },
+        size: { value: { min: 8, max: 18 } },
+        rotate: { value: 15, direction: 'fixed' },
+        move: { enable: true, speed: 12, direction: 'bottom', straight: true, outModes: 'out' }
+      },
+      background: { color: 'transparent' }
+    };
+  } else if (code <= 77) {
+    // Snow
+    config = {
+      particles: {
+        number: { value: 50 },
+        color: { value: '#ffffff' },
+        shape: { type: 'circle' },
+        opacity: { value: { min: 0.4, max: 0.8 } },
+        size: { value: { min: 2, max: 5 } },
+        move: { enable: true, speed: 1.5, direction: 'bottom', random: true, outModes: 'out',
+                drift: { min: -0.5, max: 0.5 } }
+      },
+      background: { color: 'transparent' }
+    };
+  } else {
+    // Storm — fast heavy rain
+    config = {
+      particles: {
+        number: { value: 100 },
+        color: { value: '#a0c8ff' },
+        shape: { type: 'line' },
+        opacity: { value: { min: 0.4, max: 0.8 } },
+        size: { value: { min: 10, max: 22 } },
+        rotate: { value: 20, direction: 'fixed' },
+        move: { enable: true, speed: 20, direction: 'bottom', straight: true, outModes: 'out' }
+      },
+      background: { color: 'transparent' }
+    };
+  }
+
+  tsParticles.load('wxParticles', config);
+}
+
 // ── WEATHER ──
 (function() {
   function weatherEmoji(code) {
@@ -631,155 +711,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     return '⛈';
   }
 
-  const badge  = document.getElementById('wbadge');
-  const canvas = document.getElementById('wxCanvas');
-  const ctx    = canvas.getContext('2d');
-  let raf;
-
-  function initCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width  = canvas.offsetWidth  * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
-    ctx.scale(dpr, dpr);
-  }
-
-  function startWeatherCanvas(code) {
-    initCanvas();
-    if (raf) cancelAnimationFrame(raf);
-    const W = canvas.offsetWidth, H = canvas.offsetHeight;
-    canvas.style.opacity = '1';
-
-    if (code === 0) {
-      // Sunny — pulsing glow + rotating rays
-      let t = 0;
-      const cx = W - 30, cy = 20;
-      (function draw() {
-        ctx.clearRect(0, 0, W, H);
-        const pulse = 0.35 + Math.sin(t) * 0.1;
-        const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 90);
-        g.addColorStop(0, `rgba(255,210,60,${pulse})`);
-        g.addColorStop(0.5, `rgba(255,170,0,${pulse * 0.4})`);
-        g.addColorStop(1, 'rgba(255,140,0,0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
-        for (let i = 0; i < 10; i++) {
-          const a = t * 0.4 + i * Math.PI / 5;
-          const r1 = 16, r2 = 38 + Math.sin(t * 1.5 + i) * 6;
-          ctx.beginPath();
-          ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
-          ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
-          ctx.strokeStyle = `rgba(255,220,80,${0.55 + Math.sin(t + i) * 0.1})`;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
-        t += 0.04;
-        raf = requestAnimationFrame(draw);
-      })();
-
-    } else if (code <= 3) {
-      // Partly cloudy — drifting blobs
-      const blobs = Array.from({length: 5}, (_, i) => ({
-        x: (i / 5) * W + Math.random() * 30,
-        y: 8 + Math.random() * 25,
-        r: 35 + Math.random() * 25,
-        speed: 0.2 + Math.random() * 0.2,
-        opacity: 0.18 + Math.random() * 0.12
-      }));
-      (function draw() {
-        ctx.clearRect(0, 0, W, H);
-        blobs.forEach(b => {
-          const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-          g.addColorStop(0, `rgba(200,220,255,${b.opacity})`);
-          g.addColorStop(1, 'rgba(200,220,255,0)');
-          ctx.fillStyle = g;
-          ctx.beginPath();
-          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-          ctx.fill();
-          b.x += b.speed;
-          if (b.x - b.r > W) b.x = -b.r;
-        });
-        raf = requestAnimationFrame(draw);
-      })();
-
-    } else if (code <= 67) {
-      // Rain
-      const count = code <= 48 ? 30 : 70;
-      const drops = Array.from({length: count}, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        speed: 4 + Math.random() * 5,
-        len: 10 + Math.random() * 14,
-        opacity: 0.3 + Math.random() * 0.35
-      }));
-      (function draw() {
-        ctx.clearRect(0, 0, W, H);
-        drops.forEach(d => {
-          ctx.beginPath();
-          ctx.moveTo(d.x, d.y);
-          ctx.lineTo(d.x - d.len * 0.15, d.y + d.len);
-          ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-          d.y += d.speed; d.x -= d.speed * 0.15;
-          if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
-        });
-        raf = requestAnimationFrame(draw);
-      })();
-
-    } else if (code <= 77) {
-      // Snow
-      const flakes = Array.from({length: 45}, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: 1.5 + Math.random() * 2.5,
-        speed: 0.5 + Math.random() * 1,
-        drift: (Math.random() - 0.5) * 0.4,
-        opacity: 0.4 + Math.random() * 0.4
-      }));
-      (function draw() {
-        ctx.clearRect(0, 0, W, H);
-        flakes.forEach(f => {
-          ctx.beginPath();
-          ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
-          ctx.fill();
-          f.y += f.speed; f.x += f.drift;
-          if (f.y > H) { f.y = -4; f.x = Math.random() * W; }
-        });
-        raf = requestAnimationFrame(draw);
-      })();
-
-    } else {
-      // Storm — heavy rain + flash
-      const drops = Array.from({length: 80}, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        speed: 7 + Math.random() * 6,
-        len: 14 + Math.random() * 12,
-        opacity: 0.3 + Math.random() * 0.3
-      }));
-      let flashTimer = 0;
-      (function draw() {
-        ctx.clearRect(0, 0, W, H);
-        flashTimer--;
-        if (flashTimer > 0) {
-          ctx.fillStyle = `rgba(180,210,255,${Math.min(flashTimer / 6, 0.2)})`;
-          ctx.fillRect(0, 0, W, H);
-        } else if (Math.random() < 0.004) {
-          flashTimer = 10;
-        }
-        drops.forEach(d => {
-          ctx.beginPath();
-          ctx.moveTo(d.x, d.y);
-          ctx.lineTo(d.x - d.len * 0.2, d.y + d.len);
-          ctx.strokeStyle = `rgba(140,200,255,${d.opacity})`;
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-          d.y += d.speed; d.x -= d.speed * 0.2;
-          if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
-        });
-        raf = requestAnimationFrame(draw);
-      })();
-    }
-  }
-
+  const badge = document.getElementById('wbadge');
   function clearSkeleton() {
     badge.style.animation = 'none';
     badge.style.background = '';
@@ -793,7 +725,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const min = Math.round(d.daily.temperature_2m_min[0]);
       const max = Math.round(d.daily.temperature_2m_max[0]);
       badge.textContent = `${weatherEmoji(code)} ${min}–${max}°C`;
-      startWeatherCanvas(code);
+      startParticles(code);
     })
     .catch(() => { clearSkeleton(); badge.textContent = '— °C'; });
 })();
