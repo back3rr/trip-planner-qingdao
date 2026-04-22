@@ -11,7 +11,7 @@
 
 :root {
   --bg: #0e1117; --card: #1e2535; --border: #2a3347; --surface: #161b26;
-  --a23: #4a9eff; --a24: #2ecc8a; --a25: #ff7c4a; --a26: #f5c842; --a27: #c97fff;
+  --a23: #4a9eff; --a24: #2ecc8a; --a25: #ff7c4a; --a26: #f5c842; --a27: #c97fff; --asnack: #ff6b9d;
   --text: #e8edf5; --muted: #8896b0;
   --hdr-h: 88px;
   --map-h: 50vh;
@@ -20,7 +20,7 @@
 body.light {
   --bg: #f0f4f8; --card: #ffffff; --border: #d0d8e8; --surface: #e4eaf4;
   --text: #1a2235; --muted: #6b7a99;
-  --a23: #1a7de0; --a24: #1a9966; --a25: #d95a25; --a26: #b08a00; --a27: #8b3ecf;
+  --a23: #1a7de0; --a24: #1a9966; --a25: #d95a25; --a26: #b08a00; --a27: #8b3ecf; --asnack: #d42060;
 }
 
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -105,6 +105,7 @@ body.light .d27 .sheet-gmap-btn { background: linear-gradient(135deg, #c97fff, #
 .tab[data-d="25"].active { background: rgba(255,124,74,0.12); border-top: 2px solid var(--a25); color: var(--a25); }
 .tab[data-d="26"].active { background: rgba(245,200,66,0.12); border-top: 2px solid var(--a26); color: var(--a26); }
 .tab[data-d="27"].active { background: rgba(201,127,255,0.12); border-top: 2px solid var(--a27); color: var(--a27); }
+.tab[data-d="snack"].active { background: rgba(255,107,157,0.12); border-top: 2px solid var(--asnack); color: var(--asnack); }
 
 /* ══ MAP — exactly 50vh below header ══ */
 .map-wrap {
@@ -194,6 +195,7 @@ body.light .d27 .sheet-gmap-btn { box-shadow: 0 2px 8px rgba(201,127,255,0.2), i
   padding: 11px 11px 11px 14px; display: flex; gap: 10px;
   position: relative; overflow: hidden; cursor: pointer;
   transition: background .15s;
+  user-select: none; -webkit-user-select: none;
 }
 .stop::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
 .stop:active { background: #232d40; }
@@ -201,12 +203,66 @@ body.light .stop:active { background: rgba(0,0,0,0.04); }
 .d23 .stop::before { background: var(--a23); } .d24 .stop::before { background: var(--a24); }
 .d25 .stop::before { background: var(--a25); } .d26 .stop::before { background: var(--a26); }
 .d27 .stop::before { background: var(--a27); }
+.dsnack .stop::before { background: var(--asnack); }
+.dsnack .stop + .stop { margin-top: 10px; }
+.add-stop-btn {
+  flex-shrink: 0; display: flex; align-items: center; gap: 5px;
+  padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700;
+  color: #fff; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: linear-gradient(135deg, rgba(255,107,157,0.75), rgba(255,107,157,0.5));
+  box-shadow: 0 4px 16px rgba(255,107,157,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform .15s; margin-top: 2px; font-family: inherit;
+}
+body.light .add-stop-btn {
+  background: linear-gradient(135deg, #ff6b9d, #d42060);
+  box-shadow: 0 2px 8px rgba(255,107,157,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.add-stop-btn:active { transform: scale(.95); }
+.add-modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.add-modal-overlay.open { opacity: 1; pointer-events: auto; }
+.add-modal {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 20px calc(28px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 12px;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.add-modal-overlay.open .add-modal { transform: translateY(0); }
+.add-modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 4px; }
+.add-modal-title { font-family: 'Borel', cursive; font-size: 20px; color: var(--text); }
+.add-modal input {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 0 16px; height: 48px; font-size: 16px; color: var(--text); width: 100%;
+  outline: none; font-family: inherit; box-sizing: border-box; -webkit-appearance: none; appearance: none;
+}
+.add-modal input::placeholder { color: var(--muted); }
+.add-modal-row { display: flex; gap: 8px; }
+.add-modal-row input { flex: 1; }
+.add-modal-hint { font-size: 11px; color: var(--muted); }
+.add-field { display: flex; flex-direction: column; gap: 6px; }
+.add-field-msg { font-size: 12px; min-height: 16px; line-height: 1; }
+.add-field-msg.error { color: #ff4757; }
+.add-field-msg.warn { color: #f5c842; }
+.add-modal input.invalid { border-color: #ff4757; }
+.add-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+.add-modal-cancel { flex: 1; height: 50px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.add-modal-save { flex: 2; height: 50px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #ff6b9d, #d42060); border: none; color: #fff; }
 .snum { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 .d23 .snum { background: rgba(74,158,255,.15); color: var(--a23); }
 .d24 .snum { background: rgba(46,204,138,.15); color: var(--a24); }
 .d25 .snum { background: rgba(255,124,74,.15); color: var(--a25); }
 .d26 .snum { background: rgba(245,200,66,.15); color: var(--a26); }
 .d27 .snum { background: rgba(201,127,255,.15); color: var(--a27); }
+.dsnack .snum { background: rgba(255,107,157,.15); color: var(--asnack); }
 .sbody { flex: 1; min-width: 0; }
 .stime { font-size: 11px; color: var(--muted); margin-bottom: 1px; font-weight: 600; }
 .sname { font-size: 14px; font-weight: 700; line-height: 1.3; margin-top: 4px; }
@@ -222,6 +278,7 @@ body.light .stop:active { background: rgba(0,0,0,0.04); }
 .bb { background: rgba(201,127,255,.15);color: var(--a27); border: 1px solid rgba(201,127,255,.3); }
 .bx { background: rgba(255,124,74,.15); color: var(--a25); border: 1px solid rgba(255,124,74,.3); }
 .sgmap { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); text-decoration: none; margin-top: 1px; align-self: flex-start; }
+button.sgmap { cursor: pointer; padding: 0; font-family: inherit; }
 .sgmap svg { width: 14px; height: 14px; }
 .trow { display: flex; align-items: center; gap: 8px; padding: 4px 8px; color: var(--muted); font-size: 11px; }
 .trow::before, .trow::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: .4; }
@@ -246,6 +303,21 @@ body.light .stop:active { background: rgba(0,0,0,0.04); }
 .popup-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
 .popup-time { color: #8896b0; font-size: 12px; }
 .leaflet-container a.leaflet-popup-close-button { color: #8896b0; }
+
+/* ══ TOAST ══ */
+.toast {
+  position: fixed; top: calc(var(--hdr-h) + 12px); left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: linear-gradient(135deg, rgba(26,33,50,0.97), rgba(18,24,42,0.97));
+  color: #e8edf5; font-size: 13px; font-weight: 600;
+  padding: 8px 18px; border-radius: 20px; z-index: 20000;
+  opacity: 0; transition: opacity .2s, transform .2s;
+  pointer-events: none; white-space: nowrap;
+  border: 1px solid rgba(74,158,255,0.4);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(74,158,255,0.2);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -268,6 +340,7 @@ body.light .stop:active { background: rgba(0,0,0,0.04); }
     <div class="tab"        data-d="25" onclick="sw('25')">N3<br><small>25/4</small></div>
     <div class="tab"        data-d="26" onclick="sw('26')">N4<br><small>26/4</small></div>
     <div class="tab"        data-d="27" onclick="sw('27')">N5<br><small>27/4</small></div>
+    <div class="tab"        data-d="snack" onclick="sw('snack')">Ăn<br><small>vặt</small></div>
   </div>
 </div>
 
@@ -360,7 +433,7 @@ function buildDaysMap(days, stopsByDay) {
   for (const day of days) {
     const stops = stopsByDay[day.id] || [];
     result[day.day_key] = {
-      color: day.color, zoom: day.map_zoom,
+      id: day.id, color: day.color, zoom: day.map_zoom,
       center: [day.map_center.lat, day.map_center.lng],
       pts: stops.filter(s => s.show_on_map !== false).map(s => [parseFloat(s.lat), parseFloat(s.lng), s.name, s.time_label || '']),
       gmap: day.gmap_url
@@ -370,8 +443,28 @@ function buildDaysMap(days, stopsByDay) {
 }
 
 // ── RENDER ──
-const PIN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+const PIN_SVG   = `<svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
 const ROUTE_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3,11 22,2 13,21 11,13"/></svg>`;
+const EDIT_SVG  = `<svg viewBox="0 0 24 24" fill="none" stroke="#8896b0" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const COPY_SVG  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 2000);
+}
+function copyToClipboard(text) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => showToast('Đã copy: ' + text));
+}
+
+// Long-press on Chinese name in card
+let _ltTimer = null, _ltFired = false;
+function startLT(cn) { _ltFired = false; _ltTimer = setTimeout(() => { copyToClipboard(cn); _ltFired = true; }, 600); }
+function endLT(e)    { clearTimeout(_ltTimer); if (_ltFired) { e.preventDefault(); e.stopPropagation(); _ltFired = false; } }
+function moveLT()    { clearTimeout(_ltTimer); }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function q(s)   { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
@@ -381,22 +474,36 @@ const TYPE_ICON = {
   'chụp ảnh/tham quan': '📸', 'sân bay': '✈️', 'trạm tàu/ga tàu': '🚄'
 };
 
-function renderStop(stop, trow) {
+const _snackStopsMap = {};
+
+function renderStop(stop, trow, isSnack=false) {
+  if (isSnack) _snackStopsMap[stop.id] = stop;
   const icons = (stop.stop_type||[]).map(t => TYPE_ICON[t]||'').filter(Boolean).join('');
   const costBadges = (stop.cost||[]).map(c => `<span class="b bt">${c}</span>`).join('');
   const badges = (stop.badges||[]).map(b => `<span class="b ${b.type}">${b.text}</span>`).join('');
   const allBadges = costBadges + badges;
+  const hasCoords = parseFloat(stop.lat) !== 0 || parseFloat(stop.lng) !== 0;
+  const onclick = hasCoords ? `pin(${stop.lat},${stop.lng},'${q(stop.name)}','${q(stop.chinese_name)}','${q(stop.address)}')` : '';
+  const gmapBtn = stop.gmap_url
+    ? `<a class="sgmap" href="${esc(stop.gmap_url)}" target="_blank" onclick="event.stopPropagation()">${PIN_SVG}</a>`
+    : '';
+  const editBtn = isSnack
+    ? `<button class="sgmap" type="button" onclick="event.stopPropagation();openEditStop('${stop.id}')">${EDIT_SVG}</button>`
+    : '';
+  const rightCol = isSnack
+    ? `<div style="display:flex;flex-direction:column;gap:6px;align-self:flex-start;margin-top:1px">${gmapBtn}${editBtn}</div>`
+    : gmapBtn;
   return `
-<div class="stop" onclick="pin(${stop.lat},${stop.lng},'${q(stop.name)}','${q(stop.time_label)}')">
+<div class="stop"${onclick ? ` onclick="${onclick}"` : ''}>
   <div class="snum">${stop.stop_number}</div>
   <div class="sbody">
     ${stop.time_label ? `<div class="stime">${stop.time_label.slice(-5)}${stop.duration ? ` · ${esc(stop.duration)}` : ''}</div>` : ''}
     <div class="sname">${icons ? `<span class="sico">${icons}</span>` : ''}${esc(stop.name)}</div>
-    ${stop.chinese_name ? `<div class="scn">${stop.chinese_name}${stop.address ? ` · ${esc(stop.address)}` : ''}</div>` : stop.address ? `<div class="scn">${esc(stop.address)}</div>` : ''}
+    ${stop.chinese_name ? `<div class="scn" ontouchstart="startLT('${q(stop.chinese_name)}')" ontouchend="endLT(event)" ontouchmove="moveLT()" oncontextmenu="event.preventDefault();event.stopPropagation();copyToClipboard('${q(stop.chinese_name)}')">${stop.chinese_name}${stop.address ? ` · ${esc(stop.address)}` : ''}</div>` : stop.address ? `<div class="scn">${esc(stop.address)}</div>` : ''}
     ${stop.note ? `<div class="snote">${stop.note}</div>` : ''}
     ${allBadges ? `<div class="smeta">${allBadges}</div>` : ''}
   </div>
-  ${stop.gmap_url ? `<a class="sgmap" href="${esc(stop.gmap_url)}" target="_blank" onclick="event.stopPropagation()">${PIN_SVG}</a>` : ''}
+  ${rightCol}
 </div>${trow ? `<div class="trow">${esc(trow)}</div>` : ''}`;
 }
 
@@ -422,7 +529,7 @@ function renderSheetBody(dayKey, stops, trowMap) {
       html += `<div class="slbl">${section}</div><div class="stops">`;
       lastSection = section;
     }
-    html += renderStop(stop, trowMap[stop.stop_number]);
+    html += renderStop(stop, trowMap[stop.stop_number], dayKey === 'snack');
   }
   if (lastSection !== null) html += '</div>';
   if (dayKey === '27') html += renderDay27Tips();
@@ -469,7 +576,9 @@ function renderSheet(day, stops, trowMap, isFirst) {
         <div class="dtitle">${esc(day.title)}</div>
         ${day.description ? `<div class="ddesc">${esc(day.description)}</div>` : ''}
       </div>
-      <a class="sheet-gmap-btn" href="${esc(day.gmap_url||'')}" target="_blank" onclick="event.stopPropagation()">${ROUTE_SVG}Route</a>
+      ${dk === 'snack'
+        ? `<button class="add-stop-btn" onclick="openAddStop()" type="button">＋ Thêm</button>`
+        : day.gmap_url ? `<a class="sheet-gmap-btn" href="${esc(day.gmap_url)}" target="_blank" onclick="event.stopPropagation()">${ROUTE_SVG}Route</a>` : ''}
     </div>
   </div>
   <div class="sheet-body">${renderSheetBody(dk, stops, trowMap)}</div>
@@ -488,30 +597,34 @@ function loadDay(d) {
   layers.forEach(l => map.removeLayer(l));
   layers = [];
   const data = DAYS[d];
-  // Convert center GCJ02→WGS84 for map view
-  const [clat, clng] = gcj2wgs(data.center[0], data.center[1]);
-  map.flyTo([clat, clng], data.zoom, { duration: .65 });
+  const wpts = data.pts.map(p => { const [w0,w1] = gcj2wgs(p[0],p[1]); return [w0,w1]; });
   data.pts.forEach((p,i) => {
-    const [wlat, wlng] = gcj2wgs(p[0], p[1]);
-    const m = L.marker([wlat, wlng], { icon: mkIcon(data.color, i+1) }).addTo(map);
+    const m = L.marker(wpts[i], { icon: mkIcon(data.color, i+1) }).addTo(map);
     m.bindPopup(`<div class="popup-name">${p[2]}</div><div class="popup-time">${p[3]}</div>`);
     layers.push(m);
   });
-  if (data.pts.length > 1) {
-    const latlngs = data.pts.map(p => { const [w0,w1] = gcj2wgs(p[0],p[1]); return [w0,w1]; });
-    const line = L.polyline(latlngs, {
+  if (data.pts.length > 1 && d !== 'snack') {
+    const line = L.polyline(wpts, {
       color: data.color, weight: 2.5, opacity: .65, dashArray: '6,5'
     }).addTo(map);
     layers.push(line);
   }
+  if (wpts.length > 1) {
+    map.flyToBounds(L.latLngBounds(wpts), { padding: [32, 32], maxZoom: 16, duration: .65 });
+  } else if (wpts.length === 1) {
+    map.flyTo(wpts[0], data.zoom, { duration: .65 });
+  }
 }
 
-function pin(lat, lng, name, time) {
+function pin(lat, lng, name, cn, addr) {
   if (expanded && activeSheet) expand(activeSheet, false);
   const [wlat, wlng] = gcj2wgs(lat, lng);
   map.flyTo([wlat, wlng], 17, { duration: .7 });
+  const cnHtml = cn ? `<span style="cursor:default">${cn}</span><button onclick="copyToClipboard('${q(cn)}')" style="background:none;border:none;cursor:pointer;padding:0 0 0 5px;opacity:.6;vertical-align:middle;line-height:0;color:#8896b0">${COPY_SVG}</button>` : '';
+  const addrHtml = addr ? `<span style="opacity:.75">${addr}</span>` : '';
+  const sub = [cnHtml, addrHtml].filter(Boolean).join(cn && addr ? '<br>' : '');
   L.popup().setLatLng([wlat, wlng])
-    .setContent(`<div class="popup-name">${name}</div><div class="popup-time">${time}</div>`)
+    .setContent(`<div class="popup-name">${name}</div>${sub ? `<div class="popup-time">${sub}</div>` : ''}`)
     .openOn(map);
 }
 
@@ -730,6 +843,272 @@ window.addEventListener('resize', () => {
   }
   map.invalidateSize();
 });
+
+// ── ADD / EDIT STOP (Ăn vặt tab) ──
+const SAVE_PIN = '2110';
+let _saveStep = 0;
+let _pinCallback = null;
+let _editId = null;
+
+// ── PIN MODAL ──
+function openPinModal(callback) {
+  _pinCallback = callback;
+  const input = document.getElementById('pinInput');
+  input.value = '';
+  const msg = document.getElementById('pinInputMsg');
+  msg.textContent = ''; msg.className = 'add-field-msg';
+  input.classList.remove('invalid');
+  document.getElementById('pinModal').classList.add('open');
+  setTimeout(() => input.focus(), 380);
+}
+function closePinModal() {
+  document.getElementById('pinModal').classList.remove('open');
+  _pinCallback = null;
+}
+async function confirmPin() {
+  const pin = document.getElementById('pinInput').value.trim();
+  const msg = document.getElementById('pinInputMsg');
+  if (pin !== SAVE_PIN) {
+    msg.textContent = 'PIN không đúng'; msg.className = 'add-field-msg error';
+    document.getElementById('pinInput').classList.add('invalid');
+    return;
+  }
+  const cb = _pinCallback;
+  closePinModal();
+  if (cb) await cb();
+}
+
+// ── ADD STOP ──
+function openAddStop() {
+  ['asName','asCn','asNote','asAddr','asGmap','asLat','asLng'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['asNameMsg','asGmapMsg','asLatMsg'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.textContent = ''; el.className = 'add-field-msg'; }
+  });
+  document.getElementById('asName').classList.remove('invalid');
+  document.querySelector('#addModal .add-modal-save').textContent = 'Lưu';
+  _saveStep = 0;
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAddStop() {
+  document.getElementById('addModal').classList.remove('open');
+  _saveStep = 0;
+}
+function tryExtractLatLng(url) {
+  const m = url.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+  if (m) {
+    document.getElementById('asLat').value = m[1];
+    document.getElementById('asLng').value = m[2];
+    document.getElementById('asLatMsg').textContent = '';
+    document.getElementById('asLatMsg').className = 'add-field-msg';
+  }
+}
+function validateName() {
+  const val = document.getElementById('asName').value.trim();
+  const msg = document.getElementById('asNameMsg');
+  const input = document.getElementById('asName');
+  if (!val) {
+    msg.textContent = 'Bắt buộc nhập tên quán';
+    msg.className = 'add-field-msg error';
+    input.classList.add('invalid');
+    return false;
+  }
+  msg.textContent = ''; msg.className = 'add-field-msg';
+  input.classList.remove('invalid');
+  return true;
+}
+function saveStop() {
+  if (!validateName()) return;
+  const lat = parseFloat(document.getElementById('asLat').value) || 0;
+  const lng = parseFloat(document.getElementById('asLng').value) || 0;
+  const gmapUrl = document.getElementById('asGmap').value.trim();
+  const gmapMsg = document.getElementById('asGmapMsg');
+  const latMsg  = document.getElementById('asLatMsg');
+  const saveBtn = document.querySelector('#addModal .add-modal-save');
+  const hasWarnGmap  = !gmapUrl;
+  const hasWarnCoord = lat === 0 && lng === 0;
+  if (_saveStep === 0 && (hasWarnGmap || hasWarnCoord)) {
+    if (hasWarnGmap)  { gmapMsg.textContent = 'Chưa có link bản đồ — quán sẽ không có nút pin'; gmapMsg.className = 'add-field-msg warn'; }
+    if (hasWarnCoord) { latMsg.textContent  = 'Chưa có toạ độ — quán sẽ không hiện trên bản đồ'; latMsg.className  = 'add-field-msg warn'; }
+    _saveStep = 1; saveBtn.textContent = 'Vẫn lưu';
+    return;
+  }
+  gmapMsg.textContent = ''; gmapMsg.className = 'add-field-msg';
+  latMsg.textContent  = ''; latMsg.className  = 'add-field-msg';
+  openPinModal(doSaveStop);
+}
+async function doSaveStop() {
+  const lat = parseFloat(document.getElementById('asLat').value) || 0;
+  const lng = parseFloat(document.getElementById('asLng').value) || 0;
+  const gmapUrl = document.getElementById('asGmap').value.trim();
+  const name = document.getElementById('asName').value.trim();
+  const snackId = DAYS['snack'].id;
+  const { data: existing } = await sb.from('stops').select('stop_number').eq('day_id', snackId).order('stop_number', { ascending: false }).limit(1);
+  const nextNum = (existing && existing.length > 0) ? existing[0].stop_number + 1 : 1;
+  const { error } = await sb.from('stops').insert({
+    day_id: snackId, stop_number: nextNum, lat, lng, name,
+    chinese_name: document.getElementById('asCn').value.trim() || null,
+    note: document.getElementById('asNote').value.trim() || null,
+    address: document.getElementById('asAddr').value.trim() || null,
+    gmap_url: gmapUrl || null,
+    stop_type: ['ăn uống'], time_label: null
+  });
+  if (error) { alert('Lỗi: ' + error.message); return; }
+  const { data: allStops } = await sb.from('stops').select('*').eq('day_id', snackId).order('stop_number');
+  const sheetBody = document.querySelector('#ssnack .sheet-body');
+  if (sheetBody) sheetBody.innerHTML = renderSheetBody('snack', allStops, {});
+  if (lat !== 0 || lng !== 0) {
+    const [wlat, wlng] = gcj2wgs(lat, lng);
+    const marker = L.marker([wlat, wlng], { icon: mkIcon(DAYS['snack'].color, nextNum) }).addTo(map);
+    marker.bindPopup(`<div class="popup-name">${name}</div><div class="popup-time"></div>`);
+    layers.push(marker);
+    DAYS['snack'].pts.push([lat, lng, name, '']);
+  }
+  closeAddStop();
+}
+
+// ── EDIT STOP ──
+function openEditStop(id) {
+  const stop = _snackStopsMap[id];
+  if (!stop) return;
+  _editId = id;
+  document.getElementById('eName').value = stop.name || '';
+  document.getElementById('eCn').value   = stop.chinese_name || '';
+  document.getElementById('eNote').value = stop.note || '';
+  document.getElementById('eAddr').value = stop.address || '';
+  document.getElementById('eGmap').value = stop.gmap_url || '';
+  document.getElementById('eLat').value  = stop.lat || '';
+  document.getElementById('eLng').value  = stop.lng || '';
+  const msg = document.getElementById('eNameMsg');
+  msg.textContent = ''; msg.className = 'add-field-msg';
+  document.getElementById('eName').classList.remove('invalid');
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditStop() {
+  document.getElementById('editModal').classList.remove('open');
+  _editId = null;
+}
+function validateEditName() {
+  const val = document.getElementById('eName').value.trim();
+  const msg  = document.getElementById('eNameMsg');
+  const input = document.getElementById('eName');
+  if (!val) {
+    msg.textContent = 'Bắt buộc nhập tên quán'; msg.className = 'add-field-msg error';
+    input.classList.add('invalid'); return false;
+  }
+  msg.textContent = ''; msg.className = 'add-field-msg';
+  input.classList.remove('invalid'); return true;
+}
+function tryExtractEditLatLng(url) {
+  const m = url.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+  if (m) { document.getElementById('eLat').value = m[1]; document.getElementById('eLng').value = m[2]; }
+}
+function saveEdit() {
+  if (!validateEditName()) return;
+  openPinModal(doSaveEdit);
+}
+async function doSaveEdit() {
+  const lat = parseFloat(document.getElementById('eLat').value) || 0;
+  const lng = parseFloat(document.getElementById('eLng').value) || 0;
+  const { error } = await sb.from('stops').update({
+    name: document.getElementById('eName').value.trim(),
+    chinese_name: document.getElementById('eCn').value.trim() || null,
+    note: document.getElementById('eNote').value.trim() || null,
+    address: document.getElementById('eAddr').value.trim() || null,
+    gmap_url: document.getElementById('eGmap').value.trim() || null,
+    lat, lng
+  }).eq('id', _editId);
+  if (error) { alert('Lỗi: ' + error.message); return; }
+  const snackId = DAYS['snack'].id;
+  const { data: allStops } = await sb.from('stops').select('*').eq('day_id', snackId).order('stop_number');
+  const sheetBody = document.querySelector('#ssnack .sheet-body');
+  if (sheetBody) sheetBody.innerHTML = renderSheetBody('snack', allStops, {});
+  if (activeDay === 'snack') {
+    DAYS['snack'].pts = allStops.filter(s => s.show_on_map !== false && (parseFloat(s.lat)||0) !== 0)
+      .map(s => [parseFloat(s.lat), parseFloat(s.lng), s.name, s.time_label || '']);
+    loadDay('snack');
+  }
+  closeEditStop();
+}
 </script>
+
+<div id="addModal" class="add-modal-overlay">
+  <div class="add-modal">
+    <div class="add-modal-handle"></div>
+    <div class="add-modal-title">Thêm quán</div>
+    <div class="add-field">
+      <input id="asName" placeholder="Tên *" oninput="validateName()">
+      <div class="add-field-msg" id="asNameMsg"></div>
+    </div>
+    <input id="asCn" placeholder="Tên tiếng Trung">
+    <input id="asNote" placeholder="Ghi chú">
+    <input id="asAddr" placeholder="Địa chỉ">
+    <div class="add-field">
+      <input id="asGmap" placeholder="Link Google Maps" oninput="tryExtractLatLng(this.value)">
+      <div class="add-field-msg" id="asGmapMsg"></div>
+    </div>
+    <div class="add-field">
+      <div class="add-modal-hint">Lat/Lng tự điền nếu link có !3d…!4d…</div>
+      <div class="add-modal-row">
+        <input id="asLat" placeholder="Lat" type="number" step="any">
+        <input id="asLng" placeholder="Lng" type="number" step="any">
+      </div>
+      <div class="add-field-msg" id="asLatMsg"></div>
+    </div>
+    <div class="add-modal-actions">
+      <button class="add-modal-cancel" onclick="closeAddStop()">Huỷ</button>
+      <button class="add-modal-save" onclick="saveStop()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div id="editModal" class="add-modal-overlay">
+  <div class="add-modal">
+    <div class="add-modal-handle"></div>
+    <div class="add-modal-title">Sửa quán</div>
+    <div class="add-field">
+      <input id="eName" placeholder="Tên *" oninput="validateEditName()">
+      <div class="add-field-msg" id="eNameMsg"></div>
+    </div>
+    <input id="eCn" placeholder="Tên tiếng Trung">
+    <input id="eNote" placeholder="Ghi chú">
+    <input id="eAddr" placeholder="Địa chỉ">
+    <div class="add-field">
+      <input id="eGmap" placeholder="Link Google Maps" oninput="tryExtractEditLatLng(this.value)">
+    </div>
+    <div class="add-field">
+      <div class="add-modal-hint">Lat/Lng tự điền nếu link có !3d…!4d…</div>
+      <div class="add-modal-row">
+        <input id="eLat" placeholder="Lat" type="number" step="any">
+        <input id="eLng" placeholder="Lng" type="number" step="any">
+      </div>
+    </div>
+    <div class="add-modal-actions">
+      <button class="add-modal-cancel" onclick="closeEditStop()">Huỷ</button>
+      <button class="add-modal-save" onclick="saveEdit()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="pinModal" class="add-modal-overlay" style="z-index:10001;background:rgba(0,0,0,0.5)">
+  <div class="add-modal" style="gap:20px">
+    <div class="add-modal-handle"></div>
+    <div class="add-modal-title">Nhập PIN</div>
+    <div class="add-field">
+      <input id="pinInput" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+             autocomplete="off" placeholder="· · · ·"
+             style="text-align:center;font-size:26px;letter-spacing:10px;font-weight:700"
+             onkeydown="if(event.key==='Enter')confirmPin()">
+      <div class="add-field-msg" id="pinInputMsg"></div>
+    </div>
+    <div class="add-modal-actions">
+      <button class="add-modal-cancel" onclick="closePinModal()">Huỷ</button>
+      <button class="add-modal-save" onclick="confirmPin()">Xác nhận</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
